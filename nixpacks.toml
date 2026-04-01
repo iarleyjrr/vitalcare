@@ -1,0 +1,8 @@
+[phases.setup]
+nixPkgs = ["python312"]
+
+[phases.install]
+cmds = ["pip install flask==3.1.0 gunicorn==21.2.0"]
+
+[start]
+cmd = "gunicorn --chdir backend app:app --bind 0.0.0.0:$PORT --workers 1 --timeout 120"
