@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VitalCare – Sistema de Gestão Clínica</title>
+<link rel="stylesheet" href="/css/style.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen" class="login-screen">
+  <div class="login-card">
+    <div class="login-logo">
+      <i class="fa-solid fa-heart-pulse"></i>
+      <h1>VitalCare</h1>
+      <p>Sistema de Gestão Clínica</p>
+    </div>
+    <form id="login-form">
+      <div class="form-group">
+        <label><i class="fa fa-user"></i> Usuário</label>
+        <input type="text" id="login-input" placeholder="login" autocomplete="username">
+      </div>
+      <div class="form-group">
+        <label><i class="fa fa-lock"></i> Senha</label>
+        <input type="password" id="senha-input" placeholder="senha" autocomplete="current-password">
+      </div>
+      <button type="submit" class="btn btn-primary btn-block">Entrar</button>
+      <div id="login-error" class="error-msg"></div>
+    </form>
+    <div class="login-hint">
+      <b>Acessos de teste:</b><br>
+      admin / admin123 &nbsp;|&nbsp; recepcao / recepcao123<br>
+      ana.lima / medico123 &nbsp;|&nbsp; maria.silva / paciente123
+    </div>
+  </div>
+</div>
+
+<!-- APP PRINCIPAL -->
+<div id="app" class="app hidden">
+
+  <!-- SIDEBAR -->
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-header">
+      <i class="fa-solid fa-heart-pulse"></i>
+      <span>VitalCare</span>
+    </div>
+    <nav id="sidebar-nav" class="sidebar-nav"></nav>
+    <div class="sidebar-footer">
+      <div class="user-info">
+        <div class="user-avatar" id="user-avatar">A</div>
+        <div>
+          <div id="user-name" class="user-name">–</div>
+          <div id="user-role" class="user-role">–</div>
+        </div>
+      </div>
+      <button id="logout-btn" class="btn-icon" title="Sair">
+        <i class="fa fa-right-from-bracket"></i>
+      </button>
+    </div>
+  </aside>
+
+  <!-- CONTEÚDO -->
+  <main id="main-content" class="main-content">
+    <div id="page-container"></div>
+  </main>
+
+</div>
+
+<!-- TOAST -->
+<div id="toast-container"></div>
+
+<!-- MODAL -->
+<div id="modal-overlay" class="modal-overlay hidden">
+  <div id="modal-box" class="modal-box">
+    <button id="modal-close" class="modal-close"><i class="fa fa-times"></i></button>
+    <div id="modal-content"></div>
+  </div>
+</div>
+
+<script src="/js/api.js"></script>
+<script src="/js/utils.js"></script>
+<script src="/js/components.js"></script>
+<script src="/js/pages/dashboard.js"></script>
+<script src="/js/pages/pacientes.js"></script>
+<script src="/js/pages/consultas.js"></script>
+<script src="/js/pages/agendamento.js"></script>
+<script src="/js/pages/prontuario.js"></script>
+<script src="/js/pages/medicos.js"></script>
+<script src="/js/pages/financeiro.js"></script>
+<script src="/js/pages/relatorios.js"></script>
+<script src="/js/app.js"></script>
+</body>
+</html>
