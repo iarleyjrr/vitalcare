@@ -646,3 +646,48 @@ tbody tr:last-child { border-bottom: none; }
     transition-duration: .01ms !important;
   }
 }
+
+/* ── CAIXINHA DE LOGINS (tela de login) ───────────────── */
+.login-hint-toggle {
+  display: flex; align-items: center; gap: 10px;
+  margin-top: 18px; cursor: pointer;
+}
+.login-hint-btn {
+  background: transparent; border: 1.5px solid var(--border);
+  border-radius: 6px; padding: 6px 8px; cursor: pointer;
+  display: flex; flex-direction: column; gap: 4px;
+  transition: all var(--transition);
+  -webkit-tap-highlight-color: transparent;
+}
+.login-hint-btn:hover { border-color: var(--primary); background: var(--primary-lt); }
+.login-hint-btn.open  { border-color: var(--primary); background: var(--primary-lt); }
+.hint-bar {
+  display: block; width: 18px; height: 2px;
+  background: var(--text-muted); border-radius: 2px;
+  transition: background var(--transition);
+}
+.login-hint-btn:hover .hint-bar,
+.login-hint-btn.open  .hint-bar { background: var(--primary); }
+.hint-label { font-size: 12px; color: var(--text-muted); user-select: none; }
+
+.login-hint-box {
+  margin-top: 10px; border: 1.5px solid var(--border);
+  border-radius: 10px; overflow: hidden;
+  animation: fadeIn .2s ease;
+}
+.hint-table {
+  width: 100%; border-collapse: collapse; font-size: 11.5px;
+  min-width: unset;
+}
+.hint-table thead th {
+  background: #f0f4f8; padding: 7px 10px; font-size: 10px;
+  font-weight: 700; text-transform: uppercase; letter-spacing: .5px;
+  color: var(--text-muted); border-bottom: 1px solid var(--border);
+  text-align: left; white-space: nowrap;
+}
+.hint-table tbody tr { border-bottom: 1px solid #f0f4f8; cursor: pointer; transition: background .15s; }
+.hint-table tbody tr:hover:not(.hint-sep) { background: var(--primary-lt); }
+.hint-table tbody tr:last-child { border-bottom: none; }
+.hint-table tbody td { padding: 6px 10px; color: var(--text); font-family: var(--font-mono, monospace); }
+.hint-table tbody td:last-child { font-family: inherit; color: var(--text-muted); font-size: 11px; }
+.hint-sep td { background: #f8fafc; color: var(--text-muted) !important; font-family: inherit !important; font-size: 10px !important; text-align: center; padding: 4px !important; cursor: default; letter-spacing: .5px; }

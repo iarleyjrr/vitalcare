@@ -33,10 +33,33 @@
       </button>
       <div id="login-error" class="error-msg"></div>
     </form>
-    <div class="login-hint">
-      <b>Acessos de teste:</b><br>
-      admin / admin123 &nbsp;|&nbsp; recepcao / recepcao123<br>
-      ana.lima / medico123 &nbsp;|&nbsp; maria.silva / paciente123
+    <!-- Caixinha discreta de logins -->
+    <div class="login-hint-toggle">
+      <button class="login-hint-btn" onclick="toggleLogins(this)" title="Ver logins cadastrados">
+        <span class="hint-bar"></span>
+        <span class="hint-bar"></span>
+        <span class="hint-bar"></span>
+      </button>
+      <span class="hint-label">Logins cadastrados</span>
+    </div>
+    <div class="login-hint-box hidden" id="login-hint-box">
+      <table class="hint-table">
+        <thead><tr><th>Usuário</th><th>Senha</th><th>Perfil</th></tr></thead>
+        <tbody>
+          <tr><td>admin</td><td>admin123</td><td>Administrador</td></tr>
+          <tr><td>fabio.recepcao</td><td>fabio123</td><td>Recepcionista</td></tr>
+          <tr class="hint-sep"><td colspan="3">— Médicos —</td></tr>
+          <tr><td>ana.clinicageral</td><td>ana123</td><td>Clínica Geral</td></tr>
+          <tr><td>carlos.pediatria</td><td>carlos123</td><td>Pediatria</td></tr>
+          <tr><td>beatriz.cardiologia</td><td>beatriz123</td><td>Cardiologia</td></tr>
+          <tr><td>rafael.ortopedia</td><td>rafael123</td><td>Ortopedia</td></tr>
+          <tr><td>patricia.nutricao</td><td>patricia123</td><td>Nutrição</td></tr>
+          <tr><td>marcos.psicologia</td><td>marcos123</td><td>Psicologia</td></tr>
+          <tr class="hint-sep"><td colspan="3">— Pacientes —</td></tr>
+          <tr><td>maria.paciente</td><td>maria123</td><td>Paciente</td></tr>
+          <tr><td>joao.paciente</td><td>joao123</td><td>Paciente</td></tr>
+        </tbody>
+      </table>
     </div>
   </div>
 </div>
@@ -111,6 +134,26 @@
 <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
 <script>new window.VLibras.Widget('https://vlibras.gov.br/app');</script>
 
+<script>
+function toggleLogins(btn) {
+  const box = document.getElementById('login-hint-box');
+  const open = !box.classList.contains('hidden');
+  box.classList.toggle('hidden', open);
+  btn.classList.toggle('open', !open);
+}
+// Preencher campos ao clicar numa linha da tabela
+document.addEventListener('click', function(e) {
+  const tr = e.target.closest('.hint-table tbody tr:not(.hint-sep)');
+  if (!tr) return;
+  const cells = tr.querySelectorAll('td');
+  if (cells.length >= 2) {
+    document.getElementById('login-input').value = cells[0].textContent.trim();
+    document.getElementById('senha-input').value = cells[1].textContent.trim();
+    document.getElementById('login-hint-box').classList.add('hidden');
+    document.querySelector('.login-hint-btn').classList.remove('open');
+  }
+});
+</script>
 <script src="/js/api.js"></script>
 <script src="/js/utils.js"></script>
 <script src="/js/components.js"></script>

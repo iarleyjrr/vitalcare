@@ -201,19 +201,22 @@ def init_db():
     ]:
         c.execute("INSERT OR IGNORE INTO pacientes(nome,cpf,data_nascimento,telefone,email,endereco,convenio,numero_carteira) VALUES(?,?,?,?,?,?,?,?)", p)
 
-    # Seed usuários – cada médico tem login individual
+    # Seed usuários – login individual por especialidade com senhas próprias
     def h(pw): return hashlib.sha256(pw.encode()).hexdigest()
     for u in [
-        ('admin',           h('admin123'),    'admin',         None),
-        ('recepcao',        h('recepcao123'), 'recepcionista', None),
-        ('ana.lima',        h('medico123'),   'medico',        1),
-        ('carlos.souza',    h('medico123'),   'medico',        2),
-        ('beatriz.costa',   h('medico123'),   'medico',        3),
-        ('rafael.mendes',   h('medico123'),   'medico',        4),
-        ('patricia.rocha',  h('medico123'),   'medico',        5),
-        ('marcos.andrade',  h('medico123'),   'medico',        6),
-        ('maria.silva',     h('paciente123'), 'paciente',      1),
-        ('joao.santos',     h('paciente123'), 'paciente',      2),
+        # Administrativo
+        ('admin',              h('admin123'),      'admin',         None),
+        ('fabio.recepcao',     h('fabio123'),      'recepcionista', None),
+        # Médicos – 1 login por especialidade
+        ('ana.clinicageral',   h('ana123'),        'medico',        1),
+        ('carlos.pediatria',   h('carlos123'),     'medico',        2),
+        ('beatriz.cardiologia',h('beatriz123'),    'medico',        3),
+        ('rafael.ortopedia',   h('rafael123'),     'medico',        4),
+        ('patricia.nutricao',  h('patricia123'),   'medico',        5),
+        ('marcos.psicologia',  h('marcos123'),     'medico',        6),
+        # Pacientes
+        ('maria.paciente',     h('maria123'),      'paciente',      1),
+        ('joao.paciente',      h('joao123'),       'paciente',      2),
     ]:
         c.execute("INSERT OR IGNORE INTO usuarios(login,senha_hash,perfil,id_ref) VALUES(?,?,?,?)", u)
 
@@ -834,9 +837,11 @@ def cancel_consulta(cid):
 @app.route('/api/prontuarios/<int:pid>', methods=['GET'])
 @require_auth
 def get_prontuarios_paciente(pid):
-    # Paciente só vê os seus
-    if is_paciente() and request.user['id_ref'] != pid:
-        return jsonify({'error': 'Sem permissão'}), 403
+    # Paciente só vê os SEUS PRÓPRIOS prontuários — direito garantido
+    if is_paciente():
+        if request.user['id_ref'] != pid:
+            return jsonify({'error': 'Sem permissão para ver prontuários de outro paciente'}), 403
+        # Paciente pode ver seus prontuários normalmente — cai no bloco final
     # Recepcionista não vê prontuários (dado clínico restrito)
     if is_recepcao():
         return jsonify({'error': 'Recepcionistas não têm acesso a prontuários clínicos'}), 403
@@ -1046,6 +1051,29 @@ def relatorio_atendimentos():
     })
 
 # ══════════════════════════════════════════════════════════════════════════════
+# RESET BANCO (apenas admin — recria seeds sem apagar dados de produção)
+# ══════════════════════════════════════════════════════════════════════════════
+@app.route('/api/admin/reset-users', methods=['POST'])
+@require_auth
+def reset_users():
+    if not is_admin():
+        return jsonify({'error': 'Apenas admin'}), 403
+    conn = get_db()
+    # Remove usuários de seed antigos e recria
+    logins_antigos = [
+        'recepcao','ana.lima','carlos.souza','beatriz.costa',
+        'rafael.mendes','patricia.rocha','marcos.andrade',
+        'maria.silva','joao.santos'
+    ]
+    for l in logins_antigos:
+        conn.execute("DELETE FROM usuarios WHERE login=?", (l,))
+    conn.commit()
+    conn.close()
+    # Reinicia o seed
+    init_db()
+    return jsonify({'message': 'Usuários atualizados com sucesso!'})
+
+# ══════════════════════════════════════════════════════════════════════════════
 # FRONT-END
 # ══════════════════════════════════════════════════════════════════════════════
 @app.route('/')
@@ -1065,14 +1093,15 @@ if __name__ == '__main__':
     print(f"{'='*55}")
     print(f"  🌐  Acesse: http://localhost:{port}\n")
     print("  👤  USUÁRIOS:")
-    print("      admin          / admin123    (Administrador)")
-    print("      recepcao       / recepcao123 (Recepcionista)")
-    print("      ana.lima       / medico123   (Dra. Ana Lima - Clínica Geral)")
-    print("      carlos.souza   / medico123   (Dr. Carlos - Pediatria)")
-    print("      beatriz.costa  / medico123   (Dra. Beatriz - Cardiologia)")
-    print("      rafael.mendes  / medico123   (Dr. Rafael - Ortopedia)")
-    print("      patricia.rocha / medico123   (Nutr. Patrícia - Nutrição)")
-    print("      marcos.andrade / medico123   (Psi. Marcos - Psicologia)")
-    print("      maria.silva    / paciente123 (Paciente)")
+    print("      admin                / admin123    (Administrador)")
+    print("      fabio.recepcao       / fabio123    (Recepcionista)")
+    print("      ana.clinicageral     / ana123      (Dra. Ana Lima - Clínica Geral)")
+    print("      carlos.pediatria     / carlos123   (Dr. Carlos - Pediatria)")
+    print("      beatriz.cardiologia  / beatriz123  (Dra. Beatriz - Cardiologia)")
+    print("      rafael.ortopedia     / rafael123   (Dr. Rafael - Ortopedia)")
+    print("      patricia.nutricao    / patricia123 (Nutr. Patrícia - Nutrição)")
+    print("      marcos.psicologia    / marcos123   (Psi. Marcos - Psicologia)")
+    print("      maria.paciente       / maria123    (Paciente Maria)")
+    print("      joao.paciente        / joao123     (Paciente João)")
     print(f"{'='*55}\n")
     app.run(debug=False, host='0.0.0.0', port=port)
