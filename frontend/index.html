@@ -13,26 +13,37 @@
 
 <!-- ── LOGIN ─────────────────────────────────────────── -->
 <div id="login-screen" class="login-screen">
-  <div class="login-card">
-    <div class="login-logo">
-      <i class="fa-solid fa-heart-pulse"></i>
-      <h1>VitalCare</h1>
-      <p>Sistema de Gestão Clínica</p>
+  <div class="login-screen-inner">
+
+    <!-- Painel lateral com imagem (visível só em telas >= 700px) -->
+    <div class="login-side-image">
+      <div class="login-side-text">
+        <h2>Cuidando de quem cuida de você</h2>
+        <p>Agendamento online, prontuários digitais e gestão completa para sua clínica.</p>
+      </div>
     </div>
-    <form id="login-form">
-      <div class="form-group">
-        <label><i class="fa fa-user"></i> Usuário</label>
-        <input type="text" id="login-input" placeholder="login" autocomplete="username">
+
+    <!-- Formulário de login -->
+    <div class="login-card">
+      <div class="login-logo">
+        <i class="fa-solid fa-heart-pulse"></i>
+        <h1>VitalCare</h1>
+        <p>Sistema de Gestão Clínica</p>
       </div>
-      <div class="form-group">
-        <label><i class="fa fa-lock"></i> Senha</label>
-        <input type="password" id="senha-input" placeholder="senha" autocomplete="current-password">
-      </div>
-      <button type="submit" class="btn btn-primary btn-block">
-        <i class="fa fa-right-to-bracket"></i> Entrar
-      </button>
-      <div id="login-error" class="error-msg"></div>
-    </form>
+      <form id="login-form">
+        <div class="form-group">
+          <label><i class="fa fa-user"></i> Usuário</label>
+          <input type="text" id="login-input" placeholder="login" autocomplete="username">
+        </div>
+        <div class="form-group">
+          <label><i class="fa fa-lock"></i> Senha</label>
+          <input type="password" id="senha-input" placeholder="senha" autocomplete="current-password">
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">
+          <i class="fa fa-right-to-bracket"></i> Entrar
+        </button>
+        <div id="login-error" class="error-msg"></div>
+      </form>
     <!-- Caixinha discreta de logins -->
     <div class="login-hint-toggle">
       <button class="login-hint-btn" onclick="toggleLogins(this)" title="Ver logins cadastrados">
@@ -61,8 +72,9 @@
         </tbody>
       </table>
     </div>
-  </div>
-</div>
+    </div><!-- fim login-card -->
+  </div><!-- fim login-screen-inner -->
+</div><!-- fim login-screen -->
 
 <!-- ── APP ───────────────────────────────────────────── -->
 <div id="app" class="app hidden">

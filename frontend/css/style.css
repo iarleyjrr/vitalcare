@@ -691,3 +691,87 @@ tbody tr:last-child { border-bottom: none; }
 .hint-table tbody td { padding: 6px 10px; color: var(--text); font-family: var(--font-mono, monospace); }
 .hint-table tbody td:last-child { font-family: inherit; color: var(--text-muted); font-size: 11px; }
 .hint-sep td { background: #f8fafc; color: var(--text-muted) !important; font-family: inherit !important; font-size: 10px !important; text-align: center; padding: 4px !important; cursor: default; letter-spacing: .5px; }
+
+/* ── FOTOS DE MÉDICOS ─────────────────────────────────── */
+.doctor-avatar-wrap { position: relative; width: 64px; height: 64px; margin-bottom: 12px; }
+.doctor-photo {
+  width: 64px; height: 64px; border-radius: 50%; object-fit: cover;
+  border: 3px solid var(--primary-lt);
+  box-shadow: 0 2px 8px rgba(0,0,0,.12);
+}
+.doctor-cards .doctor-avatar {
+  width: 64px; height: 64px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary), #60a5fa);
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; font-size: 22px; font-weight: 700; margin-bottom: 0;
+}
+
+/* ── CONFIRMAÇÃO DE AGENDAMENTO ───────────────────────── */
+.ag-confirm-card {
+  background: var(--primary-lt); border: 1.5px solid #c5d8f8;
+  border-radius: 14px; padding: 20px; margin: 16px 0;
+}
+.ag-confirm-medico {
+  display: flex; align-items: center; gap: 14px; margin-bottom: 16px;
+  padding-bottom: 16px; border-bottom: 1px solid #c5d8f8;
+}
+.ag-confirm-foto {
+  width: 60px; height: 60px; border-radius: 50%; object-fit: cover;
+  border: 3px solid #fff; box-shadow: 0 2px 8px rgba(0,0,0,.15);
+  flex-shrink: 0;
+}
+.ag-confirm-avatar {
+  width: 60px !important; height: 60px !important;
+  font-size: 20px !important; margin-bottom: 0 !important; flex-shrink: 0;
+}
+.ag-confirm-info { display: flex; flex-direction: column; gap: 8px; }
+.ag-confirm-row {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 14px; color: var(--text);
+}
+.ag-confirm-row i { width: 16px; color: var(--primary); flex-shrink: 0; }
+.ag-confirm-valor { font-weight: 700; font-size: 16px; color: var(--secondary); }
+
+/* ── TELA DE LOGIN COM IMAGEM ─────────────────────────── */
+.login-screen {
+  background:
+    linear-gradient(135deg, rgba(15,40,71,.88) 0%, rgba(26,74,122,.82) 50%, rgba(26,115,232,.78) 100%),
+    url('https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=1400&q=80&fit=crop') center/cover no-repeat;
+}
+.login-screen-inner {
+  display: flex; align-items: stretch; width: 100%; max-width: 900px;
+  border-radius: 20px; overflow: hidden;
+  box-shadow: 0 24px 80px rgba(0,0,0,.4);
+  min-height: 520px;
+}
+.login-side-image {
+  display: none;
+  flex: 1; background:
+    url('https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=600&q=80&fit=crop') center/cover no-repeat;
+  position: relative;
+}
+.login-side-image::after {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(180deg, rgba(15,40,71,.3) 0%, rgba(15,40,71,.6) 100%);
+}
+.login-side-text {
+  position: absolute; bottom: 32px; left: 24px; right: 24px; z-index: 1; color: #fff;
+}
+.login-side-text h2 { font-size: 22px; font-weight: 700; margin-bottom: 6px; }
+.login-side-text p  { font-size: 13px; opacity: .85; line-height: 1.6; }
+
+/* Substituir .login-card para funcionar dentro do inner */
+.login-screen .login-card {
+  border-radius: 0; box-shadow: none;
+  width: 100%; max-width: 100%;
+  display: flex; flex-direction: column; justify-content: center;
+}
+
+@media (min-width: 700px) {
+  .login-side-image { display: block; }
+  .login-screen .login-card { max-width: 420px; padding: 40px 44px; }
+}
+@media (max-width: 699px) {
+  .login-screen-inner { border-radius: 16px; min-height: unset; }
+  .login-screen .login-card { padding: 28px 22px; border-radius: 16px; }
+}
