@@ -311,6 +311,36 @@ def login():
 def me():
     return jsonify(request.user)
 
+@app.route('/api/auth/meu-medico', methods=['GET'])
+@require_auth
+def meu_medico():
+    """Retorna os dados do médico logado — busca pelo login se id_ref falhar"""
+    if not is_medico():
+        return jsonify({'error': 'Apenas médicos'}), 403
+    user = request.user
+    conn = get_db()
+    mid = user.get('id_ref')
+    medico = None
+    if mid:
+        medico = conn.execute("""
+            SELECT m.*, e.nome as especialidade_nome FROM medicos m
+            JOIN especialidades e ON e.id=m.id_especialidade WHERE m.id=?
+        """, (mid,)).fetchone()
+    # Fallback: busca pelo login/nome
+    if not medico:
+        nome = user.get('nome','')
+        login = user.get('login','')
+        medico = conn.execute("""
+            SELECT m.*, e.nome as especialidade_nome FROM medicos m
+            JOIN especialidades e ON e.id=m.id_especialidade
+            WHERE m.nome LIKE ? OR m.email LIKE ?
+        """, (f'%{nome.split(" ")[1] if " " in nome else nome}%',
+                f'%{login.split(".")[0]}%')).fetchone()
+    conn.close()
+    if not medico:
+        return jsonify({'error': 'Médico não encontrado'}), 404
+    return jsonify(dict(medico))
+
 @app.route('/api/auth/meu-perfil', methods=['GET'])
 @require_auth
 def meu_perfil():

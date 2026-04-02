@@ -28,6 +28,7 @@ const API = {
   login:  (login, senha) => API.post('/auth/login', { login, senha }),
   me:     ()             => API.get('/auth/me'),
   meuPerfil: ()         => API.get('/auth/meu-perfil'),
+  meuMedico: ()         => API.get('/auth/meu-medico'),
 
   // DASHBOARD
   dashboard: () => API.get('/dashboard'),

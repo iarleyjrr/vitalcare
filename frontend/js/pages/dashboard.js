@@ -119,11 +119,18 @@ function renderDashMedico(data) {
     data.consultas_hoje.forEach(c => {
       html += `<div class="agenda-day">
         <div class="agenda-time">${Utils.fmtTime(c.data_hora)}</div>
-        <div class="agenda-card ${c.status}">
-          <div style="font-weight:700">${c.paciente}</div>
-          <div class="text-small text-muted"><i class="fa fa-stethoscope"></i> ${c.especialidade}</div>
-          <div class="mt-4">${Utils.statusBadge(c.status)}</div>
-          ${c.observacoes ? `<div class="ag-obs-tag"><i class="fa fa-notes-medical"></i> ${c.observacoes}</div>` : ''}
+        <div class="agenda-card ${c.status}" style="position:relative">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px">
+            <div>
+              <div style="font-weight:700">${c.paciente}</div>
+              <div class="text-small text-muted"><i class="fa fa-stethoscope"></i> ${c.especialidade}</div>
+              <div class="mt-4">${Utils.statusBadge(c.status)}</div>
+              ${c.observacoes ? `<div class="ag-obs-tag"><i class="fa fa-notes-medical"></i> ${c.observacoes}</div>` : ''}
+            </div>
+            <button class="btn-ver-consulta" title="Ver detalhes" onclick="abrirDetalhesConsulta(${JSON.stringify(c).replace(/"/g,'&quot;')})">
+              <i class="fa fa-eye"></i>
+            </button>
+          </div>
         </div>
       </div>`;
     });
@@ -141,10 +148,17 @@ function renderDashMedico(data) {
   } else {
     data.proximas_consultas.forEach(c => {
       html += `<div style="padding:10px 0;border-bottom:1px solid var(--border)">
-        <div style="font-weight:600">${c.paciente}</div>
-        <div class="text-small text-muted">${Utils.fmtDateBR(c.data_hora)} às ${Utils.fmtTime(c.data_hora)}</div>
-        <div class="mt-4">${Utils.statusBadge(c.status)}</div>
-        ${c.observacoes ? `<div class="ag-obs-tag"><i class="fa fa-notes-medical"></i> ${c.observacoes}</div>` : ''}
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px">
+          <div>
+            <div style="font-weight:600">${c.paciente}</div>
+            <div class="text-small text-muted">${Utils.fmtDateBR(c.data_hora)} às ${Utils.fmtTime(c.data_hora)}</div>
+            <div class="mt-4">${Utils.statusBadge(c.status)}</div>
+            ${c.observacoes ? `<div class="ag-obs-tag"><i class="fa fa-notes-medical"></i> ${c.observacoes}</div>` : ''}
+          </div>
+          <button class="btn-ver-consulta" title="Ver detalhes" onclick="abrirDetalhesConsulta(${JSON.stringify(c).replace(/"/g,'&quot;')})">
+            <i class="fa fa-eye"></i>
+          </button>
+        </div>
       </div>`;
     });
   }

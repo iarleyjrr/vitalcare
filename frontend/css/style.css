@@ -747,7 +747,7 @@ tbody tr:last-child { border-bottom: none; }
 .login-side-image {
   display: none;
   flex: 1; background:
-    url('https://images.unsplash.com/photo-1579684385127-1ef15d508118?w=600&q=80&fit=crop') center/cover no-repeat;
+    url('https://images.unsplash.com/photo-1582750433449-648ed127bb54?w=600&q=80&fit=crop') center/cover no-repeat;
   position: relative;
 }
 .login-side-image::after {
@@ -792,3 +792,31 @@ tbody tr:last-child { border-bottom: none; }
   max-width: 100%; overflow: hidden; text-overflow: ellipsis;
 }
 .ag-obs-tag i { color: #b45309; flex-shrink: 0; }
+
+/* ── FOTO NOS CARDS DE MÉDICOS ───────────────────────── */
+.doctor-card-header {
+  width: 80px; height: 80px; margin-bottom: 12px;
+  position: relative;
+}
+.doctor-card-photo {
+  width: 80px; height: 80px; border-radius: 50%;
+  object-fit: cover; object-position: top;
+  border: 3px solid var(--primary-lt);
+  box-shadow: 0 3px 10px rgba(0,0,0,.12);
+}
+.doctor-card-avatar {
+  width: 80px !important; height: 80px !important;
+  font-size: 26px !important; margin-bottom: 0 !important;
+  border-radius: 50%;
+}
+
+/* ── BOTÃO VER DETALHES (olho) ───────────────────────── */
+.btn-ver-consulta {
+  background: rgba(26,115,232,.1); border: 1px solid rgba(26,115,232,.2);
+  border-radius: 8px; color: var(--primary); cursor: pointer;
+  padding: 6px 8px; font-size: 14px; flex-shrink: 0;
+  transition: all var(--transition);
+  display: flex; align-items: center; justify-content: center;
+  min-width: 34px; min-height: 34px;
+}
+.btn-ver-consulta:hover { background: var(--primary); color: #fff; border-color: var(--primary); }
