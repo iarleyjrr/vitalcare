@@ -184,38 +184,31 @@ function agSelectSlot(datetime, hora) {
 async function agStep4(c) {
   const user = App.getUser();
 
-  // Se for paciente → preenche automaticamente com seus próprios dados
+  // Paciente → busca seus dados pela rota segura /api/auth/meu-perfil
   if (user.perfil === 'paciente') {
-    c.innerHTML = loadingHTML('Identificando paciente...');
+    c.innerHTML = loadingHTML('Identificando seus dados...');
     try {
-      // Tenta buscar pelo id_ref primeiro
-      if (user.id_ref) {
-        const resp = await API.pacienteById(user.id_ref);
-        const paciente = resp.paciente || resp;
-        if (paciente && paciente.id) {
-          _agData.paciente_id   = paciente.id;
-          _agData.paciente_nome = paciente.nome;
-          _agData.convenio      = paciente.convenio || '';
-          _agStep++; renderAgStepper(); renderAgStep();
-          return;
-        }
-      }
-      // Fallback: busca pelo nome do usuário logado
-      const lista = await API.pacientes('');
-      // api retorna 403 para paciente — neste caso usa os dados do token
-      _agData.paciente_id   = user.id_ref || 1;
-      _agData.paciente_nome = user.nome;
-      _agData.convenio      = '';
+      const perfil = await API.meuPerfil();
+      _agData.paciente_id   = perfil.id;
+      _agData.paciente_nome = perfil.nome || user.nome;
+      _agData.convenio      = perfil.convenio || '';
+      if (!_agData.paciente_id) throw new Error('ID não encontrado');
       _agStep++; renderAgStepper(); renderAgStep();
     } catch(e) {
-      // Se deu 403 na busca de lista (esperado para paciente), usa dados do token
-      if (user.id_ref) {
-        _agData.paciente_id   = user.id_ref;
-        _agData.paciente_nome = user.nome;
-        _agData.convenio      = '';
+      // Último recurso: usa dados direto do token
+      _agData.paciente_id   = user.id_ref || user.sub;
+      _agData.paciente_nome = user.nome;
+      _agData.convenio      = '';
+      if (_agData.paciente_id) {
         _agStep++; renderAgStepper(); renderAgStep();
       } else {
-        c.innerHTML = `<div class="error-msg">Não foi possível identificar o paciente. Tente novamente.</div>`;
+        c.innerHTML = `<div style="text-align:center;padding:30px">
+          <i class="fa fa-circle-exclamation" style="font-size:40px;color:var(--danger);display:block;margin-bottom:12px"></i>
+          <p style="margin-bottom:16px">Não foi possível identificar seus dados.<br>Tente sair e entrar novamente.</p>
+          <button class="btn btn-secondary" onclick="_agStep--;renderAgStepper();renderAgStep()">
+            <i class="fa fa-arrow-left"></i> Voltar
+          </button>
+        </div>`;
       }
     }
     return;

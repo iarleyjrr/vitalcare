@@ -311,6 +311,34 @@ def login():
 def me():
     return jsonify(request.user)
 
+@app.route('/api/auth/meu-perfil', methods=['GET'])
+@require_auth
+def meu_perfil():
+    """Retorna os dados do paciente logado — acessível pelo próprio paciente"""
+    user = request.user
+    conn = get_db()
+    if user['perfil'] == 'paciente':
+        pid = user.get('id_ref') or user.get('sub')
+        # Se id_ref é None, tenta encontrar pelo login
+        if not pid:
+            login = user.get('login','')
+            # tenta achar paciente pelo e-mail que corresponde ao login
+            p = conn.execute(
+                "SELECT id FROM pacientes WHERE email LIKE ?", (f'%{login.replace(".","%")}%',)
+            ).fetchone()
+            if p: pid = p['id']
+        if pid:
+            paciente = conn.execute("SELECT * FROM pacientes WHERE id=?", (pid,)).fetchone()
+            conn.close()
+            if paciente:
+                return jsonify({'id': paciente['id'], 'nome': paciente['nome'],
+                                'convenio': paciente['convenio'], 'perfil': 'paciente'})
+        conn.close()
+        # último recurso: retorna dados do token
+        return jsonify({'id': pid, 'nome': user.get('nome'), 'convenio': '', 'perfil': 'paciente'})
+    conn.close()
+    return jsonify(user)
+
 # ══════════════════════════════════════════════════════════════════════════════
 # DASHBOARD — conteúdo filtrado por perfil
 # ══════════════════════════════════════════════════════════════════════════════

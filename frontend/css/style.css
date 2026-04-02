@@ -736,7 +736,7 @@ tbody tr:last-child { border-bottom: none; }
 .login-screen {
   background:
     linear-gradient(135deg, rgba(15,40,71,.88) 0%, rgba(26,74,122,.82) 50%, rgba(26,115,232,.78) 100%),
-    url('https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=1400&q=80&fit=crop') center/cover no-repeat;
+    url('https://images.unsplash.com/photo-1631217868264-e5b90bb7e133?w=1400&q=80&fit=crop') center/cover no-repeat;
 }
 .login-screen-inner {
   display: flex; align-items: stretch; width: 100%; max-width: 900px;
@@ -747,7 +747,7 @@ tbody tr:last-child { border-bottom: none; }
 .login-side-image {
   display: none;
   flex: 1; background:
-    url('https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=600&q=80&fit=crop') center/cover no-repeat;
+    url('https://images.unsplash.com/photo-1666214280391-8ff5bd3d0bf0?w=600&q=80&fit=crop') center/cover no-repeat;
   position: relative;
 }
 .login-side-image::after {
