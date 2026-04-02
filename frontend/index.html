@@ -5,14 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" content="#0f2847">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>VitalCare – Sistema de Gestão Clínica</title>
 <link rel="stylesheet" href="/css/style.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body>
 
-<!-- LOGIN -->
+<!-- ── LOGIN ─────────────────────────────────────────── -->
 <div id="login-screen" class="login-screen">
   <div class="login-card">
     <div class="login-logo">
@@ -29,7 +28,9 @@
         <label><i class="fa fa-lock"></i> Senha</label>
         <input type="password" id="senha-input" placeholder="senha" autocomplete="current-password">
       </div>
-      <button type="submit" class="btn btn-primary btn-block">Entrar</button>
+      <button type="submit" class="btn btn-primary btn-block">
+        <i class="fa fa-right-to-bracket"></i> Entrar
+      </button>
       <div id="login-error" class="error-msg"></div>
     </form>
     <div class="login-hint">
@@ -40,24 +41,25 @@
   </div>
 </div>
 
-<!-- APP PRINCIPAL -->
+<!-- ── APP ───────────────────────────────────────────── -->
 <div id="app" class="app hidden">
 
-  <!-- TOPBAR MOBILE -->
+  <!-- TOPBAR MOBILE (visível só em telas ≤900px via CSS) -->
   <header class="topbar" id="topbar">
     <div class="topbar-brand">
       <i class="fa-solid fa-heart-pulse"></i>
       <span>VitalCare</span>
     </div>
     <div class="topbar-right">
-      <div class="user-avatar" id="topbar-avatar" style="width:32px;height:32px;font-size:12px;">A</div>
-      <button class="hamburger" id="hamburger" aria-label="Menu">
+      <div class="user-avatar" id="topbar-avatar"
+           style="width:32px;height:32px;font-size:12px;flex-shrink:0;">A</div>
+      <button class="hamburger" id="hamburger" aria-label="Abrir menu">
         <span></span><span></span><span></span>
       </button>
     </div>
   </header>
 
-  <!-- OVERLAY (fecha sidebar ao clicar fora) -->
+  <!-- OVERLAY (fecha sidebar ao tocar fora no mobile) -->
   <div class="sidebar-overlay" id="sidebar-overlay"></div>
 
   <!-- SIDEBAR -->
@@ -79,7 +81,7 @@
     </div>
   </aside>
 
-  <!-- CONTEÚDO -->
+  <!-- CONTEÚDO PRINCIPAL -->
   <main id="main-content" class="main-content">
     <div id="page-container"></div>
   </main>
@@ -92,7 +94,9 @@
 <!-- MODAL -->
 <div id="modal-overlay" class="modal-overlay hidden">
   <div id="modal-box" class="modal-box">
-    <button id="modal-close" class="modal-close"><i class="fa fa-times"></i></button>
+    <button id="modal-close" class="modal-close" title="Fechar">
+      <i class="fa fa-times"></i>
+    </button>
     <div id="modal-content"></div>
   </div>
 </div>
