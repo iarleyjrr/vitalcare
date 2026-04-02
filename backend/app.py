@@ -380,7 +380,7 @@ def dashboard():
     if perfil == 'medico':
         mid = id_ref
         consultas_hoje = conn.execute("""
-            SELECT c.id, c.data_hora, c.status, c.tipo,
+            SELECT c.id, c.data_hora, c.status, c.tipo, c.observacoes,
                    p.nome as paciente, e.nome as especialidade
             FROM consultas c
             JOIN pacientes p ON p.id=c.id_paciente
@@ -391,7 +391,7 @@ def dashboard():
         """, (mid, hoje)).fetchall()
 
         proximas = conn.execute("""
-            SELECT c.id, c.data_hora, c.status, c.tipo,
+            SELECT c.id, c.data_hora, c.status, c.tipo, c.observacoes,
                    p.nome as paciente, e.nome as especialidade
             FROM consultas c
             JOIN pacientes p ON p.id=c.id_paciente
@@ -794,13 +794,13 @@ def get_consultas():
 @app.route('/api/consultas', methods=['POST'])
 @require_auth
 def create_consulta():
-    # Paciente pode agendar para si mesmo; recepcionista e admin para qualquer um
-    if is_medico():
-        return jsonify({'error': 'Médicos não podem agendar consultas. Use a recepção.'}), 403
     d = request.json or {}
     # Paciente só pode agendar para si mesmo
     if is_paciente() and d.get('id_paciente') != request.user['id_ref']:
         return jsonify({'error': 'Sem permissão para agendar para outro paciente.'}), 403
+    # Médico só pode agendar consultas para si mesmo
+    if is_medico() and d.get('id_medico') != request.user['id_ref']:
+        return jsonify({'error': 'Você só pode agendar consultas para si mesmo.'}), 403
 
     conn = get_db()
     try:
@@ -981,6 +981,7 @@ def get_financeiro():
         JOIN especialidades e ON e.id=m.id_especialidade
         WHERE date(f.data_emissao) BETWEEN ? AND ?
         ORDER BY f.data_emissao DESC
+        LIMIT 10
     """, (data_i, data_f)).fetchall()
     resumo = conn.execute("""
         SELECT
@@ -1028,6 +1029,7 @@ def get_financeiro_medico():
         JOIN especialidades e ON e.id=m.id_especialidade
         WHERE c.id_medico=? AND date(f.data_emissao) BETWEEN ? AND ?
         ORDER BY f.data_emissao DESC
+        LIMIT 10
     """, (mid, data_i, data_f)).fetchall()
     resumo = conn.execute("""
         SELECT

@@ -123,6 +123,7 @@ function renderDashMedico(data) {
           <div style="font-weight:700">${c.paciente}</div>
           <div class="text-small text-muted"><i class="fa fa-stethoscope"></i> ${c.especialidade}</div>
           <div class="mt-4">${Utils.statusBadge(c.status)}</div>
+          ${c.observacoes ? `<div class="ag-obs-tag"><i class="fa fa-notes-medical"></i> ${c.observacoes}</div>` : ''}
         </div>
       </div>`;
     });
@@ -143,6 +144,7 @@ function renderDashMedico(data) {
         <div style="font-weight:600">${c.paciente}</div>
         <div class="text-small text-muted">${Utils.fmtDateBR(c.data_hora)} às ${Utils.fmtTime(c.data_hora)}</div>
         <div class="mt-4">${Utils.statusBadge(c.status)}</div>
+        ${c.observacoes ? `<div class="ag-obs-tag"><i class="fa fa-notes-medical"></i> ${c.observacoes}</div>` : ''}
       </div>`;
     });
   }

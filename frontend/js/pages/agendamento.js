@@ -1,21 +1,52 @@
 // pages/agendamento.js – wizard de agendamento
+// Perfis e seus fluxos:
+//   admin/recepcao → Especialidade → Médico → Data/Hora → Paciente → Confirmação
+//   medico         → Data/Hora → Paciente → Confirmação  (esp e médico já definidos pelo login)
+//   paciente       → Especialidade → Médico → Data/Hora → Confirmação (paciente já definido)
+
 let _agStep = 1, _agData = {};
 
-// Fotos de médicos (avatares ilustrativos com diversidade racial)
+// Fotos de médicos
 const MEDICO_FOTOS = {
-  1: 'https://images.unsplash.com/photo-1594824476967-48c8b964273f?w=120&h=120&fit=crop&crop=face', // mulher branca médica
-  2: 'https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=120&h=120&fit=crop&crop=face', // homem negro médico
-  3: 'https://images.unsplash.com/photo-1651008376811-b90baee60c1f?w=120&h=120&fit=crop&crop=face', // mulher negra médica
-  4: 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=120&h=120&fit=crop&crop=face', // homem branco médico
-  5: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=120&h=120&fit=crop&crop=face', // mulher branca nutricionista
-  6: 'https://images.unsplash.com/photo-1582750433449-648ed127bb54?w=120&h=120&fit=crop&crop=face', // homem negro psicólogo
+  1: 'https://images.unsplash.com/photo-1594824476967-48c8b964273f?w=120&h=120&fit=crop&crop=face',
+  2: 'https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=120&h=120&fit=crop&crop=face',
+  3: 'https://images.unsplash.com/photo-1651008376811-b90baee60c1f?w=120&h=120&fit=crop&crop=face',
+  4: 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=120&h=120&fit=crop&crop=face',
+  5: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=120&h=120&fit=crop&crop=face',
+  6: 'https://images.unsplash.com/photo-1582750433449-648ed127bb54?w=120&h=120&fit=crop&crop=face',
 };
+
+// Retorna os steps conforme o perfil
+function getSteps() {
+  const perfil = App.getUser().perfil;
+  if (perfil === 'medico')   return ['Data/Hora','Paciente','Confirmação'];
+  if (perfil === 'paciente') return ['Especialidade','Médico','Data/Hora','Confirmação'];
+  return ['Especialidade','Médico','Data/Hora','Paciente','Confirmação']; // admin/recepcao
+}
 
 async function renderAgendamento(container) {
   _agStep = 1; _agData = {};
+  const user = App.getUser();
+
+  // Médico: pré-define esp e médico com seus próprios dados
+  if (user.perfil === 'medico') {
+    try {
+      const medico = await API.medicoById(user.id_ref);
+      _agData.medico_id          = medico.id;
+      _agData.medico_nome        = medico.nome;
+      _agData.especialidade_id   = medico.id_especialidade;
+      _agData.especialidade_nome = medico.especialidade_nome;
+    } catch(e) {
+      _agData.medico_id   = user.id_ref;
+      _agData.medico_nome = user.nome;
+    }
+  }
+
   container.innerHTML = `
     <div class="page-header">
-      <div class="page-title"><i class="fa fa-calendar-plus" style="color:var(--primary)"></i> &nbsp;Novo Agendamento</div>
+      <div class="page-title">
+        <i class="fa fa-calendar-plus" style="color:var(--primary)"></i> &nbsp;Novo Agendamento
+      </div>
     </div>
     <div class="card">
       <div class="card-body">
@@ -29,7 +60,7 @@ async function renderAgendamento(container) {
 }
 
 function renderAgStepper() {
-  const steps = ['Especialidade','Médico','Data/Hora','Paciente','Confirmação'];
+  const steps = getSteps();
   let html = '';
   steps.forEach((s, i) => {
     const n = i + 1;
@@ -46,11 +77,50 @@ function renderAgStepper() {
 async function renderAgStep() {
   const container = document.getElementById('ag-step-content');
   container.innerHTML = loadingHTML();
-  if      (_agStep === 1) await agStep1(container);
-  else if (_agStep === 2) await agStep2(container);
-  else if (_agStep === 3) await agStep3(container);
-  else if (_agStep === 4) await agStep4(container);
-  else if (_agStep === 5) await agStep5(container);
+  const perfil = App.getUser().perfil;
+
+  if (perfil === 'medico') {
+    // Fluxo médico: step1=Data/Hora, step2=Paciente, step3=Confirmação
+    if      (_agStep === 1) await agStep3(container); // Data/Hora
+    else if (_agStep === 2) await agStep4(container); // Paciente
+    else if (_agStep === 3) await agStep5(container); // Confirmação
+  } else if (perfil === 'paciente') {
+    // Fluxo paciente: step1=Especialidade, step2=Médico, step3=Data/Hora, step4=Confirmação
+    if      (_agStep === 1) await agStep1(container);
+    else if (_agStep === 2) await agStep2(container);
+    else if (_agStep === 3) await agStep3(container);
+    else if (_agStep === 4) {
+      // Auto-preencher paciente e ir direto para confirmação
+      await agAutoFillPaciente(container);
+    }
+  } else {
+    // Admin/Recepcao: fluxo completo
+    if      (_agStep === 1) await agStep1(container);
+    else if (_agStep === 2) await agStep2(container);
+    else if (_agStep === 3) await agStep3(container);
+    else if (_agStep === 4) await agStep4(container);
+    else if (_agStep === 5) await agStep5(container);
+  }
+}
+
+// Paciente: auto-preenche seus dados e avança
+async function agAutoFillPaciente(container) {
+  container.innerHTML = loadingHTML('Identificando seus dados...');
+  try {
+    const perfil = await API.meuPerfil();
+    _agData.paciente_id   = perfil.id;
+    _agData.paciente_nome = perfil.nome || App.getUser().nome;
+    _agData.convenio      = perfil.convenio || '';
+    if (!_agData.paciente_id) throw new Error('ID não encontrado');
+    _agStep++; renderAgStepper(); renderAgStep();
+  } catch(e) {
+    const u = App.getUser();
+    _agData.paciente_id   = u.id_ref || u.sub;
+    _agData.paciente_nome = u.nome;
+    _agData.convenio      = '';
+    if (_agData.paciente_id) { _agStep++; renderAgStepper(); renderAgStep(); }
+    else container.innerHTML = `<div class="error-msg">Erro ao identificar paciente. Tente novamente.</div>`;
+  }
 }
 
 // ── STEP 1: Especialidade ─────────────────────────────────────────────────────
@@ -66,7 +136,7 @@ async function agStep1(c) {
         </div>
         <div class="doctor-name">${e.nome}</div>
         <div class="text-muted text-small">${e.descricao||''}</div>
-        <div class="text-small mt-4"><i class="fa fa-clock"></i> ${e.duracao_minutos} min por consulta</div>
+        <div class="text-small mt-4"><i class="fa fa-clock"></i> ${e.duracao_minutos} min</div>
       </div>`;
     });
     html += '</div>';
@@ -89,18 +159,14 @@ async function agStep2(c) {
         <i class="fa fa-arrow-left"></i> Voltar
       </button>
       <div class="doctor-cards" style="margin-top:16px">`;
-
     medicos.forEach(m => {
       const foto = MEDICO_FOTOS[m.id];
-      const avatarHTML = foto
-        ? `<img src="${foto}" alt="${m.nome}" class="doctor-photo" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
-        : '';
-      const initials = m.nome.split(' ').map(n=>n[0]).slice(0,2).join('');
+      const init = m.nome.split(' ').map(n=>n[0]).slice(0,2).join('');
       html += `<div class="card doctor-card" onclick="agSelectMedico(${m.id},'${m.nome.replace(/'/g,"\\'")}')">
         <div class="doctor-avatar-wrap">
           ${foto ? `<img src="${foto}" alt="${m.nome}" class="doctor-photo"
             onerror="this.style.display='none';this.nextSibling.style.display='flex'">` : ''}
-          <div class="doctor-avatar" style="${foto ? 'display:none' : ''}">${initials}</div>
+          <div class="doctor-avatar" style="${foto?'display:none':''}">${init}</div>
         </div>
         <div class="doctor-name">${m.nome}</div>
         <div class="doctor-esp"><i class="fa fa-stethoscope"></i> ${m.especialidade_nome}</div>
@@ -120,14 +186,33 @@ function agSelectMedico(id, nome) {
 
 // ── STEP 3: Data e Horário ────────────────────────────────────────────────────
 async function agStep3(c) {
+  const perfil  = App.getUser().perfil;
   const minDate = Utils.today();
   const maxDate = Utils.addDays(60);
+
+  // Botão Voltar: só aparece se não for médico (que começa já nesta tela)
+  const voltarBtn = perfil !== 'medico'
+    ? `<button class="btn btn-secondary btn-sm" onclick="_agStep--;renderAgStepper();renderAgStep()">
+         <i class="fa fa-arrow-left"></i> Voltar
+       </button>` : '';
+
+  // Exibe resumo do médico para médico logado
+  const medicoInfo = perfil === 'medico'
+    ? `<div class="ag-medico-banner">
+         <div class="doctor-avatar" style="width:42px;height:42px;font-size:16px;flex-shrink:0">
+           ${(_agData.medico_nome||'').split(' ').map(n=>n[0]).slice(0,2).join('')}
+         </div>
+         <div>
+           <div style="font-weight:700">${_agData.medico_nome}</div>
+           <div class="text-small text-muted"><i class="fa fa-stethoscope"></i> ${_agData.especialidade_nome||''}</div>
+         </div>
+       </div>` : '';
+
   c.innerHTML = `
-    <h3 style="margin-bottom:16px">Selecione a data e horário</h3>
-    <button class="btn btn-secondary btn-sm" onclick="_agStep--;renderAgStepper();renderAgStep()">
-      <i class="fa fa-arrow-left"></i> Voltar
-    </button>
-    <div class="form-row" style="margin-top:16px;max-width:420px">
+    <h3 style="margin-bottom:12px">Selecione a data e horário</h3>
+    ${voltarBtn}
+    ${medicoInfo}
+    <div class="form-row" style="margin-top:14px;max-width:420px">
       <div class="form-group">
         <label><i class="fa fa-calendar"></i> Data</label>
         <input type="date" id="ag-data" min="${minDate}" max="${maxDate}" value="${minDate}">
@@ -173,55 +258,71 @@ async function loadSlots(data) {
 function agSelectSlot(datetime, hora) {
   document.querySelectorAll('.slot-btn').forEach(b => b.classList.remove('selected'));
   document.querySelector(`[data-dt="${datetime}"]`)?.classList.add('selected');
-  _agData.data_hora = datetime;
+  _agData.data_hora    = datetime;
   _agData.hora_display = hora;
-  _agData.tipo = document.getElementById('ag-tipo')?.value || 'presencial';
+  _agData.tipo         = document.getElementById('ag-tipo')?.value || 'presencial';
   _agData.data_display = document.getElementById('ag-data')?.value || '';
   setTimeout(() => { _agStep++; renderAgStepper(); renderAgStep(); }, 300);
 }
 
-// ── STEP 4: Paciente ──────────────────────────────────────────────────────────
+// ── STEP 4: Paciente (admin/recepcao/medico) ──────────────────────────────────
 async function agStep4(c) {
-  const user = App.getUser();
+  const perfil = App.getUser().perfil;
 
-  // Paciente → busca seus dados pela rota segura /api/auth/meu-perfil
-  if (user.perfil === 'paciente') {
-    c.innerHTML = loadingHTML('Identificando seus dados...');
-    try {
-      const perfil = await API.meuPerfil();
-      _agData.paciente_id   = perfil.id;
-      _agData.paciente_nome = perfil.nome || user.nome;
-      _agData.convenio      = perfil.convenio || '';
-      if (!_agData.paciente_id) throw new Error('ID não encontrado');
-      _agStep++; renderAgStepper(); renderAgStep();
-    } catch(e) {
-      // Último recurso: usa dados direto do token
-      _agData.paciente_id   = user.id_ref || user.sub;
-      _agData.paciente_nome = user.nome;
-      _agData.convenio      = '';
-      if (_agData.paciente_id) {
-        _agStep++; renderAgStepper(); renderAgStep();
-      } else {
-        c.innerHTML = `<div style="text-align:center;padding:30px">
-          <i class="fa fa-circle-exclamation" style="font-size:40px;color:var(--danger);display:block;margin-bottom:12px"></i>
-          <p style="margin-bottom:16px">Não foi possível identificar seus dados.<br>Tente sair e entrar novamente.</p>
-          <button class="btn btn-secondary" onclick="_agStep--;renderAgStepper();renderAgStep()">
-            <i class="fa fa-arrow-left"></i> Voltar
-          </button>
-        </div>`;
-      }
-    }
-    return;
-  }
+  // Botão voltar diferente para médico (step 2 deles = paciente)
+  const voltarBtn = `<button class="btn btn-secondary btn-sm" onclick="_agStep--;renderAgStepper();renderAgStep()">
+    <i class="fa fa-arrow-left"></i> Voltar
+  </button>`;
 
-  // Admin/Recepcionista → lista de pacientes para selecionar
   c.innerHTML = `
-    <h3 style="margin-bottom:16px">Selecione o paciente</h3>
-    <button class="btn btn-secondary btn-sm" onclick="_agStep--;renderAgStepper();renderAgStep()">
-      <i class="fa fa-arrow-left"></i> Voltar
-    </button>
-    <div style="margin-top:16px" id="ag-pac-search-wrap"></div>
-    <div class="card" style="margin-top:12px">
+    <h3 style="margin-bottom:12px">Selecione ou cadastre o paciente</h3>
+    ${voltarBtn}
+
+    <!-- Botão cadastrar novo paciente -->
+    <div style="margin:14px 0">
+      <button class="btn btn-success btn-sm" id="btn-novo-pac-ag">
+        <i class="fa fa-user-plus"></i> Novo paciente
+      </button>
+    </div>
+
+    <!-- Formulário novo paciente (oculto inicialmente) -->
+    <div id="form-novo-pac" class="hidden" style="background:#f0fdf4;border:1.5px solid #86efac;border-radius:12px;padding:16px;margin-bottom:16px">
+      <div style="font-weight:700;margin-bottom:12px;color:#15803d">
+        <i class="fa fa-user-plus"></i> Cadastrar novo paciente
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Nome completo *</label><input id="np-nome" placeholder="Nome do paciente"></div>
+        <div class="form-group"><label>CPF *</label><input id="np-cpf" placeholder="000.000.000-00"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>E-mail *</label><input type="email" id="np-email" placeholder="email@exemplo.com"></div>
+        <div class="form-group"><label>Telefone</label><input id="np-tel" placeholder="(11) 99999-9999"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Convênio</label>
+          <select id="np-conv">
+            <option value="">Particular</option>
+            <option value="Unimed">Unimed</option>
+            <option value="SulAmérica">SulAmérica</option>
+            <option value="Bradesco Saúde">Bradesco Saúde</option>
+            <option value="Amil">Amil</option>
+            <option value="Hapvida">Hapvida</option>
+          </select>
+        </div>
+        <div class="form-group"><label>Nº Carteirinha</label><input id="np-cart" placeholder="Número do convênio"></div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:4px">
+        <button class="btn btn-success" id="btn-salvar-novo-pac"><i class="fa fa-save"></i> Cadastrar e selecionar</button>
+        <button class="btn btn-secondary" onclick="document.getElementById('form-novo-pac').classList.add('hidden')">Cancelar</button>
+      </div>
+      <div id="np-error" class="error-msg"></div>
+    </div>
+
+    <div style="font-weight:600;margin-bottom:8px;color:var(--text-muted)">
+      <i class="fa fa-users"></i> Pacientes cadastrados
+    </div>
+    <div id="ag-pac-search-wrap"></div>
+    <div class="card" style="margin-top:8px">
       <div class="table-wrapper">
         <table>
           <thead><tr><th>Nome</th><th>CPF</th><th>Convênio</th><th></th></tr></thead>
@@ -230,19 +331,52 @@ async function agStep4(c) {
       </div>
     </div>
   `;
-  const sw = document.getElementById('ag-pac-search-wrap');
-  sw.appendChild(Components.searchBar('Buscar paciente...', Utils.debounce(async q => {
+
+  // Botão mostrar/ocultar form novo paciente
+  document.getElementById('btn-novo-pac-ag').addEventListener('click', () => {
+    document.getElementById('form-novo-pac').classList.toggle('hidden');
+  });
+
+  // Salvar novo paciente
+  document.getElementById('btn-salvar-novo-pac').addEventListener('click', async () => {
+    const errEl = document.getElementById('np-error');
+    errEl.textContent = '';
+    const d = {
+      nome:     document.getElementById('np-nome').value.trim(),
+      cpf:      document.getElementById('np-cpf').value.trim(),
+      email:    document.getElementById('np-email').value.trim(),
+      telefone: document.getElementById('np-tel').value.trim(),
+      convenio: document.getElementById('np-conv').value,
+      numero_carteira: document.getElementById('np-cart').value.trim(),
+    };
+    if (!d.nome || !d.cpf || !d.email) { errEl.textContent = 'Preencha nome, CPF e e-mail.'; return; }
+    const btn = document.getElementById('btn-salvar-novo-pac');
+    btn.disabled = true; btn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Cadastrando...';
     try {
-      const data = await API.pacientes(q);
-      renderAgPacientes(data);
-    } catch(e) { showToast(e.message, 'error'); }
+      const res = await API.criarPaciente(d);
+      _agData.paciente_id   = res.id;
+      _agData.paciente_nome = d.nome;
+      _agData.convenio      = d.convenio || '';
+      showToast(`Paciente ${d.nome} cadastrado!`, 'success');
+      _agStep++; renderAgStepper(); renderAgStep();
+    } catch(e) {
+      errEl.textContent = e.message;
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fa fa-save"></i> Cadastrar e selecionar';
+    }
+  });
+
+  // Busca
+  const sw = document.getElementById('ag-pac-search-wrap');
+  sw.appendChild(Components.searchBar('Buscar paciente por nome ou CPF...', Utils.debounce(async q => {
+    try { renderAgPacientes(await API.pacientes(q)); } catch(e) { showToast(e.message,'error'); }
   }, 300)));
+
   try {
-    const data = await API.pacientes('');
-    renderAgPacientes(data);
+    renderAgPacientes(await API.pacientes(''));
   } catch(e) {
     document.getElementById('ag-pac-tbody').innerHTML =
-      `<tr><td colspan="4" class="text-muted" style="padding:20px;text-align:center">${e.message}</td></tr>`;
+      `<tr><td colspan="4" style="padding:20px;text-align:center;color:var(--text-muted)">${e.message}</td></tr>`;
   }
 }
 
@@ -251,7 +385,7 @@ function renderAgPacientes(list) {
   if (!tbody) return;
   tbody.innerHTML = '';
   if (!list.length) {
-    tbody.innerHTML = `<tr><td colspan="4">${emptyStateHTML('users','Nenhum paciente encontrado')}</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="4" style="padding:20px;text-align:center;color:var(--text-muted)">Nenhum paciente encontrado</td></tr>`;
     return;
   }
   list.forEach(p => {
@@ -279,48 +413,49 @@ async function agStep5(c) {
   };
   const valor = valores[_agData.especialidade_nome] || 200;
   _agData.valor = valor;
-
   const fotoMedico = MEDICO_FOTOS[_agData.medico_id];
+  const perfil = App.getUser().perfil;
+
+  const voltarBtn = `<button class="btn btn-secondary btn-sm" onclick="_agStep--;renderAgStepper();renderAgStep()">
+    <i class="fa fa-arrow-left"></i> Voltar
+  </button>`;
 
   c.innerHTML = `
-    <h3 style="margin-bottom:16px">
+    <h3 style="margin-bottom:12px">
       <i class="fa fa-check-circle" style="color:var(--secondary)"></i> Confirme o Agendamento
     </h3>
-    <button class="btn btn-secondary btn-sm" onclick="_agStep--;renderAgStepper();renderAgStep()">
-      <i class="fa fa-arrow-left"></i> Voltar
-    </button>
+    ${voltarBtn}
     <div class="ag-confirm-card">
       <div class="ag-confirm-medico">
-        ${fotoMedico
-          ? `<img src="${fotoMedico}" alt="${_agData.medico_nome}" class="ag-confirm-foto"
-               onerror="this.style.display='none';this.nextSibling.style.display='flex'">`
-          : ''}
+        ${fotoMedico ? `<img src="${fotoMedico}" alt="${_agData.medico_nome}" class="ag-confirm-foto"
+            onerror="this.style.display='none';this.nextSibling.style.display='flex'">` : ''}
         <div class="doctor-avatar ag-confirm-avatar" style="${fotoMedico?'display:none':''}">
-          ${_agData.medico_nome.split(' ').map(n=>n[0]).slice(0,2).join('')}
+          ${(_agData.medico_nome||'').split(' ').map(n=>n[0]).slice(0,2).join('')}
         </div>
         <div>
           <div style="font-weight:700;font-size:16px">${_agData.medico_nome}</div>
-          <div class="text-muted text-small"><i class="fa fa-stethoscope"></i> ${_agData.especialidade_nome}</div>
+          <div class="text-muted text-small"><i class="fa fa-stethoscope"></i> ${_agData.especialidade_nome||''}</div>
         </div>
       </div>
       <div class="ag-confirm-info">
         <div class="ag-confirm-row"><i class="fa fa-calendar"></i><span>${Utils.fmtDateBR(_agData.data_hora)}</span></div>
         <div class="ag-confirm-row"><i class="fa fa-clock"></i><span>${_agData.hora_display}</span></div>
-        <div class="ag-confirm-row"><i class="fa fa-user"></i><span>${_agData.paciente_nome}</span></div>
-        <div class="ag-confirm-row"><i class="fa fa-${_agData.tipo==='telemedicina'?'video':'hospital'}"></i>
-          <span>${_agData.tipo === 'telemedicina' ? 'Telemedicina' : 'Presencial'}</span></div>
-        <div class="ag-confirm-row"><i class="fa fa-heart"></i>
-          <span>${_agData.convenio || 'Particular'}</span></div>
+        <div class="ag-confirm-row"><i class="fa fa-user"></i><span>${_agData.paciente_nome||'–'}</span></div>
+        <div class="ag-confirm-row">
+          <i class="fa fa-${_agData.tipo==='telemedicina'?'video':'hospital'}"></i>
+          <span>${_agData.tipo === 'telemedicina' ? 'Telemedicina' : 'Presencial'}</span>
+        </div>
+        <div class="ag-confirm-row"><i class="fa fa-heart"></i><span>${_agData.convenio || 'Particular'}</span></div>
         <div class="ag-confirm-row ag-confirm-valor">
           <i class="fa fa-dollar-sign"></i><span>${Utils.fmtMoney(valor)}</span>
         </div>
       </div>
     </div>
     <div class="form-group" style="margin-top:16px">
-      <label>Observações (opcional)</label>
-      <textarea id="ag-obs" rows="2" placeholder="Informações adicionais..."></textarea>
+      <label><i class="fa fa-notes-medical"></i> Observações (opcional)</label>
+      <textarea id="ag-obs" rows="2" placeholder="Ex: paciente em jejum, alergia a medicamento, queixa principal..."></textarea>
     </div>
-    <button class="btn btn-primary btn-block" id="ag-confirmar">
+    <button class="btn btn-primary btn-block" id="ag-confirmar" style="margin-top:8px">
       <i class="fa fa-calendar-check"></i> Confirmar Agendamento
     </button>
     <div id="ag-result"></div>
@@ -344,9 +479,9 @@ async function agStep5(c) {
         <div style="text-align:center;padding:30px">
           <i class="fa fa-check-circle" style="font-size:56px;color:var(--secondary);display:block;margin-bottom:14px"></i>
           <h2 style="color:var(--secondary)">Consulta agendada com sucesso!</h2>
-          <p class="text-muted" style="margin-top:8px">Um lembrete será enviado por e-mail.</p>
+          <p class="text-muted" style="margin-top:8px">A consulta foi registrada no sistema.</p>
           <button class="btn btn-primary" style="margin-top:16px" onclick="App.navigate('consultas')">
-            <i class="fa fa-list"></i> Ver minhas consultas
+            <i class="fa fa-list"></i> Ver consultas
           </button>
         </div>`;
       btn.remove();
