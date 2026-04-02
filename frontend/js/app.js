@@ -6,21 +6,23 @@ const App = {
 
   getUser: () => App._user,
 
-  // ── Menus por perfil ──────────────────────────────────
+  // ── Menus por perfil (permissões revisadas) ───────────
   _menus: {
+    // ADMIN – acesso total
     admin: [
       { group: 'Principal' },
       { id:'dashboard',   icon:'gauge-high',     label:'Dashboard' },
       { id:'agendamento', icon:'calendar-plus',  label:'Novo Agendamento' },
-      { group: 'Gestão' },
+      { group: 'Gestão Clínica' },
       { id:'consultas',   icon:'calendar-check', label:'Consultas' },
       { id:'pacientes',   icon:'users',          label:'Pacientes' },
       { id:'medicos',     icon:'user-doctor',    label:'Médicos' },
       { id:'prontuario',  icon:'file-medical',   label:'Prontuários' },
-      { group: 'Financeiro' },
+      { group: 'Financeiro & Relatórios' },
       { id:'financeiro',  icon:'dollar-sign',    label:'Financeiro' },
       { id:'relatorios',  icon:'chart-bar',      label:'Relatórios' },
     ],
+    // RECEPCIONISTA – agenda e cadastros, sem financeiro completo e sem prontuários
     recepcionista: [
       { group: 'Principal' },
       { id:'dashboard',   icon:'gauge-high',     label:'Dashboard' },
@@ -29,17 +31,18 @@ const App = {
       { id:'consultas',   icon:'calendar-check', label:'Consultas' },
       { id:'pacientes',   icon:'users',          label:'Pacientes' },
       { id:'medicos',     icon:'user-doctor',    label:'Médicos' },
-      { group: 'Financeiro' },
-      { id:'financeiro',  icon:'dollar-sign',    label:'Financeiro' },
     ],
+    // MÉDICO – apenas seus dados, suas consultas, seu faturamento
     medico: [
       { group: 'Minha Agenda' },
-      { id:'dashboard',   icon:'gauge-high',     label:'Dashboard' },
-      { id:'consultas',   icon:'calendar-check', label:'Consultas' },
+      { id:'dashboard',   icon:'gauge-high',     label:'Meu Dashboard' },
+      { id:'consultas',   icon:'calendar-check', label:'Minhas Consultas' },
       { id:'prontuario',  icon:'file-medical',   label:'Prontuários' },
-      { group: 'Pacientes' },
-      { id:'pacientes',   icon:'users',          label:'Pacientes' },
+      { group: 'Meus Dados' },
+      { id:'pacientes',   icon:'users',          label:'Meus Pacientes' },
+      { id:'financeiro',  icon:'dollar-sign',    label:'Meu Faturamento' },
     ],
+    // PACIENTE – apenas seus próprios dados
     paciente: [
       { group: 'Minha Saúde' },
       { id:'dashboard',   icon:'gauge-high',     label:'Início' },

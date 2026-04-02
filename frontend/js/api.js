@@ -63,7 +63,10 @@ const API = {
   // FINANCEIRO
   financeiro: (params = {}) => {
     const qs = new URLSearchParams(params).toString();
-    return API.get('/financeiro' + (qs ? `?${qs}` : ''));
+    // Médico usa rota própria de faturamento
+    const user = JSON.parse(atob(localStorage.getItem('vc_token')?.split('.')[1] || 'e30=') || '{}');
+    const rota = user.perfil === 'medico' ? '/financeiro/medico' : '/financeiro';
+    return API.get(rota + (qs ? `?${qs}` : ''));
   },
   pagarFatura: (id, forma) => API.post(`/financeiro/${id}/pagar`, { forma_pagamento: forma }),
 
