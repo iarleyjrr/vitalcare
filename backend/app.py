@@ -6,14 +6,17 @@ Flask + SQLite
 from flask import Flask, request, jsonify, send_from_directory
 import sqlite3, hashlib, hmac, base64, json, os, datetime, re, uuid, time
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DB_PATH  = os.path.join(BASE_DIR, '..', 'data', 'vitalcare.db')
+BASE_DIR  = os.path.dirname(os.path.abspath(__file__))
+# Em produção o banco fica em /tmp (ou DATA_DIR definido pelo servidor)
+_DATA_DIR = os.environ.get('DATA_DIR', os.path.join(BASE_DIR, '..', 'data'))
+os.makedirs(_DATA_DIR, exist_ok=True)
+DB_PATH   = os.path.join(_DATA_DIR, 'vitalcare.db')
 FRONT_DIR = os.path.join(BASE_DIR, '..', 'frontend')
 
 app = Flask(__name__, static_folder=FRONT_DIR, static_url_path='')
 
-# ─── JWT SIMPLES (sem dependência externa) ───────────────────────────────────
-SECRET = "vitalcare_secret_2025_pim3_unip"
+# ─── JWT – use variável de ambiente SECRET_KEY em produção ───────────────────
+SECRET = os.environ.get('SECRET_KEY', 'vitalcare_secret_2025_pim3_unip')
 
 def _b64url(data: bytes) -> str:
     return base64.urlsafe_b64encode(data).rstrip(b'=').decode()
@@ -859,13 +862,18 @@ def serve_frontend(path='index.html'):
         return send_from_directory(FRONT_DIR, 'index.html')
 
 
+# ─── INICIALIZAÇÃO AUTOMÁTICA (Gunicorn + desenvolvimento) ────────────────────
+# Garante que o banco é criado tanto ao rodar com gunicorn quanto com python
+with app.app_context():
+    init_db()
+
 # ─── MAIN ─────────────────────────────────────────────────────────────────────
 if __name__ == '__main__':
-    init_db()
+    port = int(os.environ.get('PORT', 5000))
     print("\n" + "="*55)
     print("   🏥  VitalCare - Sistema de Gestão Clínica")
     print("="*55)
-    print("  🌐  Acesse: http://localhost:5000")
+    print(f"  🌐  Acesse: http://localhost:{port}")
     print()
     print("  👤  USUÁRIOS DE TESTE:")
     print("      admin        / admin123       (Administrador)")
@@ -874,4 +882,4 @@ if __name__ == '__main__':
     print("      carlos.souza / medico123      (Dr. Carlos Souza)")
     print("      maria.silva  / paciente123    (Paciente)")
     print("="*55 + "\n")
-    app.run(debug=False, host='0.0.0.0', port=5000)
+    app.run(debug=False, host='0.0.0.0', port=port)

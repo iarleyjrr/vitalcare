@@ -86,6 +86,22 @@ const App = {
       if (e.target === document.getElementById('modal-overlay')) closeModal();
     });
 
+    // Menu hamburguer (mobile)
+    const hamburger = document.getElementById('hamburger');
+    const sidebarEl = document.getElementById('sidebar');
+    const overlayEl = document.getElementById('sidebar-overlay');
+    function openSidebar()  {
+      sidebarEl.classList.add('open'); hamburger.classList.add('open');
+      overlayEl.classList.add('visible'); document.body.style.overflow = 'hidden';
+    }
+    function closeSidebar() {
+      sidebarEl.classList.remove('open'); hamburger.classList.remove('open');
+      overlayEl.classList.remove('visible'); document.body.style.overflow = '';
+    }
+    hamburger.addEventListener('click', () => sidebarEl.classList.contains('open') ? closeSidebar() : openSidebar());
+    overlayEl.addEventListener('click', closeSidebar);
+    App._closeSidebar = closeSidebar;
+
     // Tentar recuperar sessão
     const token = localStorage.getItem('vc_token');
     if (token) {
@@ -103,9 +119,12 @@ const App = {
     document.getElementById('app').classList.remove('hidden');
 
     const user = App._user;
+    const avatarTxt = Utils.avatar(user.nome || user.login);
     document.getElementById('user-name').textContent = user.nome || user.login;
     document.getElementById('user-role').textContent = Utils.perfilLabel(user.perfil);
-    document.getElementById('user-avatar').textContent = Utils.avatar(user.nome || user.login);
+    document.getElementById('user-avatar').textContent = avatarTxt;
+    const tb = document.getElementById('topbar-avatar');
+    if (tb) tb.textContent = avatarTxt;
 
     App.buildMenu();
     App.navigate('dashboard');
@@ -162,6 +181,8 @@ const App = {
     if (fn) fn();
     else container.innerHTML = `<div class="empty-state"><i class="fa fa-triangle-exclamation"></i><h3>Página não encontrada</h3></div>`;
 
+    // Fecha sidebar no mobile ao navegar
+    if (App._closeSidebar) App._closeSidebar();
     // Scroll ao topo
     document.getElementById('main-content').scrollTo(0,0);
   }

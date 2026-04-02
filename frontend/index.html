@@ -2,7 +2,10 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0f2847">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>VitalCare – Sistema de Gestão Clínica</title>
 <link rel="stylesheet" href="/css/style.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
@@ -40,6 +43,23 @@
 <!-- APP PRINCIPAL -->
 <div id="app" class="app hidden">
 
+  <!-- TOPBAR MOBILE -->
+  <header class="topbar" id="topbar">
+    <div class="topbar-brand">
+      <i class="fa-solid fa-heart-pulse"></i>
+      <span>VitalCare</span>
+    </div>
+    <div class="topbar-right">
+      <div class="user-avatar" id="topbar-avatar" style="width:32px;height:32px;font-size:12px;">A</div>
+      <button class="hamburger" id="hamburger" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <!-- OVERLAY (fecha sidebar ao clicar fora) -->
+  <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
   <!-- SIDEBAR -->
   <aside id="sidebar" class="sidebar">
     <div class="sidebar-header">
@@ -48,12 +68,10 @@
     </div>
     <nav id="sidebar-nav" class="sidebar-nav"></nav>
     <div class="sidebar-footer">
-      <div class="user-info">
-        <div class="user-avatar" id="user-avatar">A</div>
-        <div>
-          <div id="user-name" class="user-name">–</div>
-          <div id="user-role" class="user-role">–</div>
-        </div>
+      <div class="user-avatar" id="user-avatar">A</div>
+      <div class="user-info-text">
+        <div id="user-name" class="user-name">–</div>
+        <div id="user-role" class="user-role">–</div>
       </div>
       <button id="logout-btn" class="btn-icon" title="Sair">
         <i class="fa fa-right-from-bracket"></i>
@@ -79,7 +97,7 @@
   </div>
 </div>
 
-<!-- Início do Widget VLibras -->
+<!-- Widget VLibras -->
 <div vw class="enabled">
   <div vw-access-button class="active"></div>
   <div vw-plugin-wrapper>
@@ -87,10 +105,7 @@
   </div>
 </div>
 <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
-<script>
-  new window.VLibras.Widget('https://vlibras.gov.br/app');
-</script>
-<!-- Fim do Widget VLibras -->
+<script>new window.VLibras.Widget('https://vlibras.gov.br/app');</script>
 
 <script src="/js/api.js"></script>
 <script src="/js/utils.js"></script>
