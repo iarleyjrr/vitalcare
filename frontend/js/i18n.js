@@ -1,63 +1,168 @@
-// i18n.js — Traduções PT/EN + Dark Mode
+// i18n.js — Traduções PT/EN aplicadas em todo o site
 const I18N = {
   pt: {
     // Login
-    'login.title': 'VitalCare', 'login.subtitle': 'Sistema de Gestão Clínica',
-    'login.user': 'Usuário', 'login.password': 'Senha', 'login.enter': 'Entrar',
-    'login.hint': 'Logins cadastrados', 'login.side_title': 'Cuidando de quem cuida de você',
-    'login.side_desc': 'Agendamento online, prontuários digitais e gestão completa para sua clínica.',
-    'login.lang': 'Idioma', 'login.darkmode': 'Modo escuro',
+    'login.user':'Usuário','login.password':'Senha','login.enter':'Entrar',
+    'login.hint':'Logins cadastrados','login.darkmode':'Modo escuro',
+    'login.side_title':'Cuidando de quem cuida de você',
+    'login.side_desc':'Agendamento online, prontuários digitais e gestão completa para sua clínica.',
     // Menu
-    'menu.dashboard': 'Dashboard', 'menu.schedule': 'Novo Agendamento',
-    'menu.consults': 'Consultas', 'menu.patients': 'Pacientes',
-    'menu.doctors': 'Médicos', 'menu.records': 'Prontuários',
-    'menu.financial': 'Financeiro', 'menu.reports': 'Relatórios',
-    'menu.my_dashboard': 'Meu Dashboard', 'menu.my_consults': 'Minhas Consultas',
-    'menu.my_records': 'Meus Prontuários', 'menu.my_patients': 'Meus Pacientes',
-    'menu.my_billing': 'Meu Faturamento', 'menu.book': 'Agendar Consulta',
+    'nav.dashboard':'Dashboard','nav.new_appt':'Novo Agendamento',
+    'nav.consults':'Consultas','nav.patients':'Pacientes',
+    'nav.doctors':'Médicos','nav.records':'Prontuários',
+    'nav.financial':'Financeiro','nav.reports':'Relatórios',
+    'nav.my_dashboard':'Meu Dashboard','nav.my_consults':'Minhas Consultas',
+    'nav.my_records':'Meus Prontuários','nav.my_patients':'Meus Pacientes',
+    'nav.my_billing':'Meu Faturamento','nav.book':'Agendar Consulta',
+    'nav.start':'Início',
+    // Páginas
+    'page.dashboard':'Dashboard','page.schedule':'Novo Agendamento',
+    'page.consults':'Consultas','page.patients':'Pacientes',
+    'page.doctors':'Médicos','page.records':'Prontuários',
+    'page.financial':'Financeiro','page.reports':'Relatórios',
+    // Botões comuns
+    'btn.save':'Salvar','btn.cancel':'Cancelar','btn.close':'Fechar',
+    'btn.back':'Voltar','btn.confirm':'Confirmar','btn.edit':'Editar',
+    'btn.new':'Novo','btn.filter':'Filtrar','btn.search':'Buscar',
+    'btn.schedule':'Agendar','btn.new_appt':'Novo Agendamento',
+    // Status
+    'status.scheduled':'Agendada','status.confirmed':'Confirmada',
+    'status.done':'Realizada','status.cancelled':'Cancelada','status.absent':'Falta',
+    // Agendamento
+    'appt.specialty':'Especialidade','appt.doctor':'Médico',
+    'appt.datetime':'Data/Hora','appt.patient':'Paciente','appt.confirm':'Confirmação',
+    'appt.select_specialty':'Selecione a especialidade',
+    'appt.select_doctor':'Selecione o médico',
+    'appt.select_datetime':'Selecione a data e horário',
+    'appt.select_patient':'Selecione ou cadastre o paciente',
+    'appt.new_patient':'Novo paciente',
+    'appt.confirm_title':'Confirme o Agendamento',
+    'appt.obs':'Observações (opcional)',
+    'appt.btn_confirm':'Confirmar Agendamento',
+    // Dashboard
+    'dash.today':'Agenda de Hoje','dash.next7':'Próximas Consultas (7 dias)',
+    'dash.patients':'Pacientes cadastrados','dash.doctors':'Médicos ativos',
+    'dash.today_count':'Consultas hoje','dash.month_count':'Consultas no mês',
+    'dash.revenue':'Receita mês','dash.absence':'Absenteísmo',
+    // Financeiro
+    'fin.title':'Financeiro','fin.my_title':'Meu Faturamento',
+    'fin.date':'Data','fin.patient':'Paciente','fin.specialty':'Especialidade',
+    'fin.doctor':'Médico','fin.value':'Valor','fin.status':'Status','fin.payment':'Pagamento',
+    'fin.actions':'Ações','fin.pay':'Registrar pagamento',
+    // Prontuário
+    'rec.title':'Prontuários','rec.new':'Novo Prontuário','rec.search':'Buscar paciente...',
+    'rec.anamnesis':'Anamnese','rec.diagnosis':'Diagnóstico',
+    'rec.prescription':'Prescrição','rec.observations':'Observações',
+    // Médicos
+    'doc.title':'Médicos','doc.new':'Novo Médico','doc.crm':'CRM',
+    'doc.email':'E-mail','doc.phone':'Telefone','doc.about':'Sobre',
+    'doc.book':'Agendar consulta',
+    // Geral
+    'general.loading':'Carregando...','general.error':'Erro',
+    'general.no_data':'Nenhum registro encontrado',
+    'general.logout':'Sair',
   },
   en: {
-    'login.title': 'VitalCare', 'login.subtitle': 'Clinic Management System',
-    'login.user': 'Username', 'login.password': 'Password', 'login.enter': 'Sign In',
-    'login.hint': 'Registered logins', 'login.side_title': 'Caring for those who care for you',
-    'login.side_desc': 'Online scheduling, digital records and complete management for your clinic.',
-    'login.lang': 'Language', 'login.darkmode': 'Dark mode',
-    'menu.dashboard': 'Dashboard', 'menu.schedule': 'New Appointment',
-    'menu.consults': 'Appointments', 'menu.patients': 'Patients',
-    'menu.doctors': 'Doctors', 'menu.records': 'Medical Records',
-    'menu.financial': 'Financial', 'menu.reports': 'Reports',
-    'menu.my_dashboard': 'My Dashboard', 'menu.my_consults': 'My Appointments',
-    'menu.my_records': 'My Records', 'menu.my_patients': 'My Patients',
-    'menu.my_billing': 'My Billing', 'menu.book': 'Book Appointment',
+    'login.user':'Username','login.password':'Password','login.enter':'Sign In',
+    'login.hint':'Registered logins','login.darkmode':'Dark mode',
+    'login.side_title':'Caring for those who care for you',
+    'login.side_desc':'Online scheduling, digital records and complete management for your clinic.',
+    'nav.dashboard':'Dashboard','nav.new_appt':'New Appointment',
+    'nav.consults':'Appointments','nav.patients':'Patients',
+    'nav.doctors':'Doctors','nav.records':'Medical Records',
+    'nav.financial':'Financial','nav.reports':'Reports',
+    'nav.my_dashboard':'My Dashboard','nav.my_consults':'My Appointments',
+    'nav.my_records':'My Records','nav.my_patients':'My Patients',
+    'nav.my_billing':'My Billing','nav.book':'Book Appointment',
+    'nav.start':'Home',
+    'page.dashboard':'Dashboard','page.schedule':'New Appointment',
+    'page.consults':'Appointments','page.patients':'Patients',
+    'page.doctors':'Doctors','page.records':'Medical Records',
+    'page.financial':'Financial','page.reports':'Reports',
+    'btn.save':'Save','btn.cancel':'Cancel','btn.close':'Close',
+    'btn.back':'Back','btn.confirm':'Confirm','btn.edit':'Edit',
+    'btn.new':'New','btn.filter':'Filter','btn.search':'Search',
+    'btn.schedule':'Schedule','btn.new_appt':'New Appointment',
+    'status.scheduled':'Scheduled','status.confirmed':'Confirmed',
+    'status.done':'Completed','status.cancelled':'Cancelled','status.absent':'No-show',
+    'appt.specialty':'Specialty','appt.doctor':'Doctor',
+    'appt.datetime':'Date/Time','appt.patient':'Patient','appt.confirm':'Confirmation',
+    'appt.select_specialty':'Select specialty',
+    'appt.select_doctor':'Select doctor',
+    'appt.select_datetime':'Select date and time',
+    'appt.select_patient':'Select or register patient',
+    'appt.new_patient':'New patient',
+    'appt.confirm_title':'Confirm Appointment',
+    'appt.obs':'Notes (optional)',
+    'appt.btn_confirm':'Confirm Appointment',
+    'dash.today':"Today's Schedule",'dash.next7':'Upcoming (7 days)',
+    'dash.patients':'Registered patients','dash.doctors':'Active doctors',
+    'dash.today_count':'Today\'s appointments','dash.month_count':'Monthly appointments',
+    'dash.revenue':'Monthly revenue','dash.absence':'Absence rate',
+    'fin.title':'Financial','fin.my_title':'My Billing',
+    'fin.date':'Date','fin.patient':'Patient','fin.specialty':'Specialty',
+    'fin.doctor':'Doctor','fin.value':'Amount','fin.status':'Status',
+    'fin.payment':'Payment','fin.actions':'Actions','fin.pay':'Record payment',
+    'rec.title':'Medical Records','rec.new':'New Record','rec.search':'Search patient...',
+    'rec.anamnesis':'Anamnesis','rec.diagnosis':'Diagnosis',
+    'rec.prescription':'Prescription','rec.observations':'Notes',
+    'doc.title':'Doctors','doc.new':'New Doctor','doc.crm':'Medical ID',
+    'doc.email':'E-mail','doc.phone':'Phone','doc.about':'About',
+    'doc.book':'Book appointment',
+    'general.loading':'Loading...','general.error':'Error',
+    'general.no_data':'No records found',
+    'general.logout':'Sign out',
   }
 };
 
 const Lang = {
   _lang: localStorage.getItem('vc_lang') || 'pt',
-  get: (key) => (I18N[Lang._lang] || I18N.pt)[key] || key,
-  set: (lang) => { Lang._lang = lang; localStorage.setItem('vc_lang', lang); Lang.apply(); },
-  apply: () => {
+  get(key) { return (I18N[this._lang] || I18N.pt)[key] || key; },
+  set(lang) {
+    this._lang = lang;
+    localStorage.setItem('vc_lang', lang);
+    this.apply();
+    // Atualiza botões de idioma
+    ['pt','en'].forEach(l => {
+      const btn = document.getElementById('lang-' + l);
+      if (btn) btn.classList.toggle('active', l === lang);
+    });
+  },
+  apply() {
+    // Traduz elementos com data-i18n
     document.querySelectorAll('[data-i18n]').forEach(el => {
-      const val = Lang.get(el.dataset.i18n);
-      if (el.tagName === 'INPUT' && el.placeholder !== undefined) el.placeholder = val;
+      const val = this.get(el.dataset.i18n);
+      if (el.tagName === 'INPUT' && el.type !== 'submit') el.placeholder = val;
       else el.textContent = val;
+    });
+    // Traduz menus da sidebar quando construída
+    document.querySelectorAll('.nav-item[data-i18n-key]').forEach(el => {
+      const span = el.querySelector('span');
+      if (span) span.textContent = this.get(el.dataset.i18nKey);
+    });
+    // Traduz page titles
+    document.querySelectorAll('[data-i18n-title]').forEach(el => {
+      el.textContent = this.get(el.dataset.i18nTitle);
     });
   }
 };
 
 const DarkMode = {
   _dark: localStorage.getItem('vc_dark') === '1',
-  init: () => { if (DarkMode._dark) document.documentElement.classList.add('dark'); },
-  toggle: () => {
-    DarkMode._dark = !DarkMode._dark;
-    localStorage.setItem('vc_dark', DarkMode._dark ? '1' : '0');
-    document.documentElement.classList.toggle('dark', DarkMode._dark);
-    // Atualiza ícone do botão
-    const btn = document.getElementById('dark-toggle');
-    if (btn) btn.innerHTML = DarkMode._dark
-      ? '<i class="fa fa-sun"></i>' : '<i class="fa fa-moon"></i>';
+  init() { if (this._dark) document.documentElement.classList.add('dark'); },
+  toggle() {
+    this._dark = !this._dark;
+    localStorage.setItem('vc_dark', this._dark ? '1' : '0');
+    document.documentElement.classList.toggle('dark', this._dark);
+    this._updateIcons();
+  },
+  _updateIcons() {
+    ['dark-toggle','dark-toggle-top'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.innerHTML = this._dark ? '<i class="fa fa-sun"></i>' : '<i class="fa fa-moon"></i>';
+    });
   }
 };
 
-// Inicializa dark mode imediatamente para evitar flash
+// Inicializa imediatamente
 DarkMode.init();

@@ -219,3 +219,108 @@ async function getExamesHTML(prontId) {
     <p style="margin-top:8px">Nenhum exame solicitado</p>
   </div>`;
 }
+
+async function abrirNovoProntuario() {
+  try {
+    const [pacientes, consultas] = await Promise.all([
+      API.pacientes(''),
+      API.consultas({})
+    ]);
+
+    const consultasAbertas = consultas.filter(c => !['cancelada'].includes(c.status));
+    let optsPac = pacientes.map(p =>
+      `<option value="${p.id}">${p.nome} — ${p.cpf}</option>`
+    ).join('');
+
+    openModal(
+      `<h2 class="modal-title"><i class="fa fa-file-medical"></i> Novo Prontuário</h2>
+      <div class="form-group">
+        <label>Paciente *</label>
+        <select id="np-pid">
+          <option value="">Selecione o paciente...</option>
+          ${optsPac}
+        </select>
+      </div>
+      <div class="form-group" id="np-consulta-wrap" style="display:none">
+        <label>Consulta associada *</label>
+        <select id="np-cid">
+          <option value="">Selecione a consulta...</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Anamnese</label>
+        <textarea id="np-anam" rows="3" placeholder="Histórico, queixas principais..."></textarea>
+      </div>
+      <div class="form-group">
+        <label>Diagnóstico</label>
+        <textarea id="np-diag" rows="2" placeholder="CID, hipóteses diagnósticas..."></textarea>
+      </div>
+      <div class="form-group">
+        <label>Prescrição</label>
+        <textarea id="np-presc" rows="2" placeholder="Medicamentos, doses, orientações..."></textarea>
+      </div>
+      <div class="form-group">
+        <label>Observações</label>
+        <textarea id="np-obs" rows="2" placeholder="Informações adicionais..."></textarea>
+      </div>
+      <div id="np-error" class="error-msg"></div>
+      <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:16px">
+        <button class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
+        <button class="btn btn-primary" id="np-salvar">
+          <i class="fa fa-save"></i> Salvar Prontuário
+        </button>
+      </div>`
+    );
+
+    // Quando selecionar paciente, carrega suas consultas
+    document.getElementById('np-pid').addEventListener('change', function() {
+      const pid = this.value;
+      const wrap = document.getElementById('np-consulta-wrap');
+      const sel  = document.getElementById('np-cid');
+      if (!pid) { wrap.style.display='none'; return; }
+      const pacs = consultasAbertas.filter(c => String(c.id_paciente) === String(pid));
+      if (pacs.length === 0) {
+        wrap.style.display='none';
+        document.getElementById('np-error').textContent = 'Este paciente não tem consultas registradas.';
+        return;
+      }
+      document.getElementById('np-error').textContent = '';
+      sel.innerHTML = '<option value="">Selecione...</option>' +
+        pacs.map(c =>
+          `<option value="${c.id}">${Utils.fmtDateBR(c.data_hora)} ${Utils.fmtTime(c.data_hora)} — ${c.medico_nome||''} — ${c.status}</option>`
+        ).join('');
+      wrap.style.display = 'block';
+    });
+
+    document.getElementById('np-salvar').addEventListener('click', async () => {
+      const pid = document.getElementById('np-pid').value;
+      const cid = document.getElementById('np-cid').value;
+      const errEl = document.getElementById('np-error');
+      errEl.textContent = '';
+      if (!pid) { errEl.textContent = 'Selecione um paciente.'; return; }
+      if (!cid) { errEl.textContent = 'Selecione a consulta associada.'; return; }
+
+      const btn = document.getElementById('np-salvar');
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Salvando...';
+      try {
+        await API.salvarProntuario({
+          id_consulta:  parseInt(cid),
+          id_paciente:  parseInt(pid),
+          anamnese:     document.getElementById('np-anam').value,
+          diagnostico:  document.getElementById('np-diag').value,
+          prescricao:   document.getElementById('np-presc').value,
+          observacoes:  document.getElementById('np-obs').value,
+        });
+        showToast('Prontuário salvo com sucesso!', 'success');
+        closeModal();
+        renderProntuario(document.getElementById('page-container'));
+      } catch(e) {
+        errEl.textContent = e.message;
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa fa-save"></i> Salvar Prontuário';
+      }
+    });
+
+  } catch(e) { showToast(e.message, 'error'); }
+}

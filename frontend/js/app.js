@@ -8,47 +8,43 @@ const App = {
 
   // ── Menus por perfil (permissões revisadas) ───────────
   _menus: {
-    // ADMIN – acesso total
     admin: [
       { group: 'Principal' },
-      { id:'dashboard',   icon:'gauge-high',     label:'Dashboard' },
-      { id:'agendamento', icon:'calendar-plus',  label:'Novo Agendamento' },
+      { id:'dashboard',   icon:'gauge-high',     label:'Dashboard',          i18n:'nav.dashboard' },
+      { id:'agendamento', icon:'calendar-plus',  label:'Novo Agendamento',   i18n:'nav.new_appt' },
       { group: 'Gestão Clínica' },
-      { id:'consultas',   icon:'calendar-check', label:'Consultas' },
-      { id:'pacientes',   icon:'users',          label:'Pacientes' },
-      { id:'medicos',     icon:'user-doctor',    label:'Médicos' },
-      { id:'prontuario',  icon:'file-medical',   label:'Prontuários' },
+      { id:'consultas',   icon:'calendar-check', label:'Consultas',          i18n:'nav.consults' },
+      { id:'pacientes',   icon:'users',          label:'Pacientes',          i18n:'nav.patients' },
+      { id:'medicos',     icon:'user-doctor',    label:'Médicos',            i18n:'nav.doctors' },
+      { id:'prontuario',  icon:'file-medical',   label:'Prontuários',        i18n:'nav.records' },
       { group: 'Financeiro & Relatórios' },
-      { id:'financeiro',  icon:'dollar-sign',    label:'Financeiro' },
-      { id:'relatorios',  icon:'chart-bar',      label:'Relatórios' },
+      { id:'financeiro',  icon:'dollar-sign',    label:'Financeiro',         i18n:'nav.financial' },
+      { id:'relatorios',  icon:'chart-bar',      label:'Relatórios',         i18n:'nav.reports' },
     ],
-    // RECEPCIONISTA – agenda e cadastros, sem financeiro completo e sem prontuários
     recepcionista: [
       { group: 'Principal' },
-      { id:'dashboard',   icon:'gauge-high',     label:'Dashboard' },
-      { id:'agendamento', icon:'calendar-plus',  label:'Novo Agendamento' },
+      { id:'dashboard',   icon:'gauge-high',     label:'Dashboard',          i18n:'nav.dashboard' },
+      { id:'agendamento', icon:'calendar-plus',  label:'Novo Agendamento',   i18n:'nav.new_appt' },
       { group: 'Gestão' },
-      { id:'consultas',   icon:'calendar-check', label:'Consultas' },
-      { id:'pacientes',   icon:'users',          label:'Pacientes' },
-      { id:'medicos',     icon:'user-doctor',    label:'Médicos' },
+      { id:'consultas',   icon:'calendar-check', label:'Consultas',          i18n:'nav.consults' },
+      { id:'pacientes',   icon:'users',          label:'Pacientes',          i18n:'nav.patients' },
+      { id:'medicos',     icon:'user-doctor',    label:'Médicos',            i18n:'nav.doctors' },
     ],
-    // MÉDICO – apenas seus dados, suas consultas, seu faturamento
     medico: [
       { group: 'Minha Agenda' },
-      { id:'dashboard',   icon:'gauge-high',     label:'Meu Dashboard' },
-      { id:'consultas',   icon:'calendar-check', label:'Minhas Consultas' },
-      { id:'prontuario',  icon:'file-medical',   label:'Prontuários' },
+      { id:'dashboard',   icon:'gauge-high',     label:'Meu Dashboard',      i18n:'nav.my_dashboard' },
+      { id:'consultas',   icon:'calendar-check', label:'Minhas Consultas',   i18n:'nav.my_consults' },
+      { id:'prontuario',  icon:'file-medical',   label:'Prontuários',        i18n:'nav.records' },
       { group: 'Meus Dados' },
-      { id:'pacientes',   icon:'users',          label:'Meus Pacientes' },
-      { id:'financeiro',  icon:'dollar-sign',    label:'Meu Faturamento' },
+      { id:'pacientes',   icon:'users',          label:'Meus Pacientes',     i18n:'nav.my_patients' },
+      { id:'financeiro',  icon:'dollar-sign',    label:'Meu Faturamento',    i18n:'nav.my_billing' },
     ],
-    // PACIENTE – apenas seus próprios dados
     paciente: [
       { group: 'Minha Saúde' },
-      { id:'dashboard',   icon:'gauge-high',     label:'Início' },
-      { id:'agendamento', icon:'calendar-plus',  label:'Agendar Consulta' },
-      { id:'consultas',   icon:'calendar-check', label:'Minhas Consultas' },
-      { id:'prontuario',  icon:'file-medical',   label:'Meus Prontuários' },
+      { id:'dashboard',   icon:'gauge-high',     label:'Início',             i18n:'nav.start' },
+      { id:'agendamento', icon:'calendar-plus',  label:'Agendar Consulta',   i18n:'nav.book' },
+      { id:'consultas',   icon:'calendar-check', label:'Minhas Consultas',   i18n:'nav.my_consults' },
+      { id:'prontuario',  icon:'file-medical',   label:'Meus Prontuários',   i18n:'nav.my_records' },
     ],
   },
 
@@ -164,6 +160,7 @@ const App = {
     if (topbarAvatar) topbarAvatar.textContent = avatarTxt;
 
     App.buildMenu();
+    Lang.apply();
     App.navigate('dashboard');
   },
 
@@ -185,7 +182,9 @@ const App = {
       const el = document.createElement('div');
       el.className    = 'nav-item';
       el.dataset.page = item.id;
-      el.innerHTML    = `<i class="fa fa-${item.icon}"></i><span>${item.label}</span>`;
+      const label = item.i18n ? Lang.get(item.i18n) : item.label;
+      el.innerHTML    = `<i class="fa fa-${item.icon}"></i><span>${label}</span>`;
+      el.dataset.i18nKey = item.i18n || '';
       el.addEventListener('click', () => App.navigate(item.id));
       nav.appendChild(el);
     });

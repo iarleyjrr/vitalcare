@@ -602,7 +602,7 @@ tbody tr:last-child { border-bottom: none; }
   .step-num  { width: 26px; height: 26px; font-size: 11px; }
   .step-line { width: 14px; margin: 0 4px; }
 
-  .doctor-cards  { grid-template-columns: 1fr; }
+  .doctor-cards  { grid-template-columns: repeat(auto-fill, minmax(180px,1fr)); }
   .agenda-time   { min-width: 44px; font-size: 12px; }
 
   .modal-overlay { padding: 0; align-items: flex-end; }
@@ -822,7 +822,7 @@ tbody tr:last-child { border-bottom: none; }
 .btn-ver-consulta:hover { background: var(--primary); color: #fff; border-color: var(--primary); }
 
 /* ══════════════════════════════════════════════════════
-   DARK MODE
+   DARK MODE — cobertura completa
    ══════════════════════════════════════════════════════ */
 :root.dark {
   --bg:        #0f172a;
@@ -831,35 +831,138 @@ tbody tr:last-child { border-bottom: none; }
   --text:      #e2e8f0;
   --text-muted:#94a3b8;
   --sidebar-bg:#020617;
-  --primary-lt:#1e3a5f;
+  --primary-lt:#1e3864;
+  --shadow:    0 2px 12px rgba(0,0,0,.3);
 }
-.dark body          { background: var(--bg); color: var(--text); }
-.dark .card         { background: var(--card-bg); border-color: var(--border); }
-.dark .login-card   { background: #1e293b; }
+
+/* Base */
+.dark body  { background: var(--bg); color: var(--text); }
+.dark .main-content { background: var(--bg); }
+
+/* Cards e painéis */
+.dark .card,
+.dark .stat-card,
+.dark .doctor-card   { background: var(--card-bg); border-color: var(--border); color: var(--text); }
+.dark .card-header   { border-color: var(--border); }
+
+/* Login */
+.dark .login-card    { background: #1e293b; box-shadow: 0 20px 60px rgba(0,0,0,.5); }
+.dark .login-screen  { background:
+  linear-gradient(135deg, rgba(2,6,23,.9) 0%, rgba(15,23,42,.85) 50%, rgba(30,58,138,.75) 100%),
+  url('https://images.unsplash.com/photo-1538108149393-fbbd81895907?w=1400&q=80&fit=crop') center/cover no-repeat; }
+
+/* Hint table (logins) */
+.dark .login-hint-box { border-color: var(--border); background: #1e293b; }
+.dark .hint-table thead th {
+  background: #0f172a; color: #94a3b8;
+  border-color: var(--border);
+}
+.dark .hint-table tbody td { color: #e2e8f0; background: #1e293b; }
+.dark .hint-table tbody tr { border-color: var(--border); }
+.dark .hint-table tbody tr:hover:not(.hint-sep) { background: #1e3864; }
+.dark .hint-sep td  { background: #0f172a !important; color: #64748b !important; }
+
+/* Formulários */
 .dark .form-group input,
 .dark .form-group select,
-.dark .form-group textarea { background: #0f172a; color: var(--text); border-color: var(--border); }
-.dark .search-bar   { background: #1e293b; border-color: var(--border); }
-.dark .search-bar input { color: var(--text); }
-.dark thead th      { background: #0f172a; color: var(--text-muted); border-color: var(--border); }
-.dark tbody tr:hover{ background: #1e293b; }
-.dark tbody td      { color: var(--text); }
-.dark .stat-card    { background: var(--card-bg); border-color: var(--border); }
-.dark .modal-box    { background: #1e293b; }
-.dark .btn-secondary{ background: #1e293b; color: var(--text); border-color: var(--border); }
-.dark .login-hint-box { border-color: var(--border); }
-.dark .hint-table thead th { background: #0f172a; }
-.dark .hint-table tbody tr:hover:not(.hint-sep) { background: var(--primary-lt); }
-.dark .hint-table tbody td { color: var(--text); }
-.dark .page-title   { color: var(--text); }
-.dark .agenda-card  { background: #1e3a5f; }
-.dark .ag-confirm-card { background: #1e3a5f; border-color: #2d4a6f; }
-.dark .form-novo-pac-wrap { background: #0f2a1f; border-color: #166534; }
-.dark .slots-grid .slot-btn { background: #1e293b; color: var(--text); border-color: var(--border); }
-.dark .pront-header { background: linear-gradient(135deg, #020617, #0f172a); }
-.dark .nav-group-label { color: rgba(255,255,255,.25); }
-.dark .login-bottom-bar { border-top-color: var(--border); }
+.dark .form-group textarea {
+  background: #0f172a; color: #e2e8f0;
+  border-color: #334155;
+}
+.dark .form-group label { color: #cbd5e1; }
+.dark .form-group input::placeholder,
+.dark .form-group textarea::placeholder { color: #475569; }
 
+/* Botões */
+.dark .btn-secondary { background: #1e293b; color: #e2e8f0; border-color: #334155; }
+.dark .btn-secondary:hover { background: #334155; }
+.dark .btn-icon { color: #94a3b8; }
+
+/* Tabelas */
+.dark thead th   { background: #0f172a; color: #94a3b8; border-color: var(--border); }
+.dark tbody tr   { border-color: var(--border); }
+.dark tbody tr:hover { background: #1e293b; }
+.dark tbody td   { color: #e2e8f0; }
+.dark table      { background: transparent; }
+
+/* Search e filtros */
+.dark .search-bar { background: #1e293b; border-color: #334155; }
+.dark .search-bar input { color: #e2e8f0; background: transparent; }
+.dark .search-bar input::placeholder { color: #475569; }
+.dark .filters .form-group input,
+.dark .filters .form-group select { background: #0f172a; color: #e2e8f0; border-color: #334155; }
+
+/* Modal */
+.dark .modal-overlay { background: rgba(2,6,23,.8); }
+.dark .modal-box { background: #1e293b; }
+.dark .modal-close { background: #0f172a; color: #94a3b8; }
+.dark .modal-title { color: #e2e8f0; }
+
+/* Badges */
+.dark .badge-gray { background: #1e293b; color: #94a3b8; }
+
+/* Agenda e consultas */
+.dark .agenda-card           { background: #1e3864; border-color: #2563eb; }
+.dark .agenda-card.cancelada { background: #2d1515; border-color: #dc2626; }
+.dark .agenda-card.realizada  { background: #14291a; border-color: #16a34a; }
+.dark .agenda-card.falta      { background: #1e293b; border-color: #475569; }
+.dark .agenda-time { color: #60a5fa; }
+
+/* Slots de horário */
+.dark .slot-btn { background: #1e293b; color: #e2e8f0; border-color: #334155; }
+.dark .slot-btn:hover:not(.unavailable) { background: #1e3864; border-color: #3b82f6; color: #60a5fa; }
+.dark .slot-btn.unavailable { background: #0f172a; color: #475569; }
+
+/* Formulário de novo paciente no agendamento */
+.dark #form-novo-pac { background: #0f2a1f !important; border-color: #166534 !important; }
+.dark #form-novo-pac .form-group label { color: #86efac; }
+
+/* Confirmação de agendamento */
+.dark .ag-confirm-card { background: #1e3864; border-color: #2563eb; }
+.dark .ag-confirm-medico { border-color: #2563eb; }
+
+/* Prontuário */
+.dark .pront-header { background: linear-gradient(135deg, #020617, #0f172a); }
+
+/* Stepper */
+.dark .step-num { background: #1e293b; color: #64748b; }
+.dark .step-line { background: #334155; }
+
+/* Page header */
+.dark .page-title { color: #e2e8f0; }
+.dark .page-title span { color: #60a5fa; }
+.dark .nav-group-label { color: rgba(255,255,255,.2); }
+
+/* Obs tag */
+.dark .ag-obs-tag { background: #2d2000; border-color: #7c5700; color: #fcd34d; }
+
+/* Médico banner */
+.dark .ag-medico-banner { background: #1e3864; border-color: #2563eb; }
+
+/* Bottom bar do login */
+.dark .login-bottom-bar { border-top-color: #334155; }
+.dark .lang-btn { border-color: #334155; color: #94a3b8; }
+.dark .lang-sep { color: #334155; }
+.dark .dark-toggle-btn { border-color: #334155; color: #94a3b8; }
+
+/* Doctor cards */
+.dark .doctor-card:hover { border-color: #3b82f6; box-shadow: 0 8px 24px rgba(59,130,246,.2); }
+
+/* Bar chart */
+.dark .bar-track { background: #1e293b; }
+
+/* Stat icons */
+.dark .stat-icon.blue   { background: #1e3864; }
+.dark .stat-icon.green  { background: #14291a; }
+.dark .stat-icon.orange { background: #2d1a00; }
+.dark .stat-icon.purple { background: #2d1854; }
+.dark .stat-icon.red    { background: #2d1515; }
+.dark .stat-icon.teal   { background: #0f2929; }
+
+/* Hint toggle button */
+.dark .login-hint-btn { border-color: #334155; }
+.dark .hint-bar { background: #94a3b8; }
+.dark .hint-label { color: #94a3b8; }
 /* ── DARK TOGGLE BOTÃO ────────────────────────────────── */
 .dark-toggle-btn {
   background: transparent; border: 1.5px solid var(--border);
@@ -893,7 +996,7 @@ tbody tr:last-child { border-bottom: none; }
 .vitalcare-logo { display: flex; align-items: center; justify-content: center; margin-bottom: 4px; }
 
 /* ── MÉDICOS — GRID LADO A LADO ──────────────────────── */
-.doctor-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px,1fr)); gap: 16px; }
+.doctor-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px,1fr)); gap: 16px; }
 .doctor-card  { padding: 20px; cursor: pointer; transition: all .2s ease; border-radius: var(--radius); }
 .doctor-card:hover { box-shadow: 0 8px 24px rgba(26,115,232,.18); transform: translateY(-2px); border-color: var(--primary); }
 .doctor-card-header { width: 80px; height: 80px; margin-bottom: 12px; }
