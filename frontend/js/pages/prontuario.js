@@ -13,6 +13,9 @@ async function renderProntuario(container, params = {}) {
   container.innerHTML = `
     <div class="page-header">
       <div class="page-title"><i class="fa fa-file-medical" style="color:var(--primary)"></i> &nbsp;Prontuários</div>
+      <div class="page-actions">
+        ${(user.perfil === 'admin' || user.perfil === 'medico') ? '<button class="btn btn-primary" onclick="abrirNovoProntuario()"><i class="fa fa-plus"></i> Novo Prontuário</button>' : ''}
+      </div>
     </div>
     <div class="card" style="margin-bottom:16px">
       <div class="card-body">

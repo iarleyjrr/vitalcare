@@ -4,10 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" content="#0f2847">
-<meta name="apple-mobile-web-app-capable" content="yes">
 <title>VitalCare – Sistema de Gestão Clínica</title>
 <link rel="stylesheet" href="/css/style.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<!-- i18n + dark mode antes de tudo para evitar flash -->
+<script src="/js/i18n.js"></script>
 </head>
 <body>
 
@@ -15,92 +16,134 @@
 <div id="login-screen" class="login-screen">
   <div class="login-screen-inner">
 
-    <!-- Painel lateral com imagem (visível só em telas >= 700px) -->
+    <!-- Painel lateral imagem -->
     <div class="login-side-image">
       <div class="login-side-text">
-        <h2>Cuidando de quem cuida de você</h2>
-        <p>Agendamento online, prontuários digitais e gestão completa para sua clínica.</p>
+        <h2 data-i18n="login.side_title">Cuidando de quem cuida de você</h2>
+        <p data-i18n="login.side_desc">Agendamento online, prontuários digitais e gestão completa para sua clínica.</p>
       </div>
     </div>
 
-    <!-- Formulário de login -->
+    <!-- Formulário -->
     <div class="login-card">
+      <!-- Logo -->
       <div class="login-logo">
-        <i class="fa-solid fa-heart-pulse"></i>
-        <h1>VitalCare</h1>
-        <p>Sistema de Gestão Clínica</p>
+        <div class="vitalcare-logo">
+          <svg viewBox="0 0 60 60" width="56" height="56" xmlns="http://www.w3.org/2000/svg">
+            <!-- Marca de nascença estilizada como logo médica -->
+            <circle cx="30" cy="30" r="28" fill="#1a73e8" opacity="0.12"/>
+            <circle cx="30" cy="30" r="20" fill="#1a73e8" opacity="0.18"/>
+            <!-- Formato orgânico inspirado na marca -->
+            <ellipse cx="30" cy="28" rx="12" ry="14" fill="#1a73e8" opacity="0.7"/>
+            <ellipse cx="24" cy="32" rx="7" ry="9" fill="#1a73e8" opacity="0.5"/>
+            <ellipse cx="36" cy="32" rx="7" ry="9" fill="#1a73e8" opacity="0.5"/>
+            <ellipse cx="30" cy="22" rx="9" ry="7" fill="#1a73e8" opacity="0.6"/>
+            <!-- Cruz médica central em branco -->
+            <rect x="27" y="20" width="6" height="16" rx="2" fill="white"/>
+            <rect x="22" y="25" width="16" height="6" rx="2" fill="white"/>
+          </svg>
+        </div>
+        <h1 data-i18n="login.title">VitalCare</h1>
+        <p data-i18n="login.subtitle">Sistema de Gestão Clínica</p>
       </div>
+
+      <!-- Formulário de login -->
       <form id="login-form">
         <div class="form-group">
-          <label><i class="fa fa-user"></i> Usuário</label>
-          <input type="text" id="login-input" placeholder="login" autocomplete="username">
+          <label><i class="fa fa-user"></i> <span data-i18n="login.user">Usuário</span></label>
+          <input type="text" id="login-input" data-i18n-placeholder="login.user" placeholder="login" autocomplete="username">
         </div>
         <div class="form-group">
-          <label><i class="fa fa-lock"></i> Senha</label>
-          <input type="password" id="senha-input" placeholder="senha" autocomplete="current-password">
+          <label><i class="fa fa-lock"></i> <span data-i18n="login.password">Senha</span></label>
+          <input type="password" id="senha-input" data-i18n-placeholder="login.password" placeholder="senha" autocomplete="current-password">
         </div>
         <button type="submit" class="btn btn-primary btn-block">
-          <i class="fa fa-right-to-bracket"></i> Entrar
+          <i class="fa fa-right-to-bracket"></i> <span data-i18n="login.enter">Entrar</span>
         </button>
         <div id="login-error" class="error-msg"></div>
       </form>
-    <!-- Caixinha discreta de logins -->
-    <div class="login-hint-toggle">
-      <button class="login-hint-btn" onclick="toggleLogins(this)" title="Ver logins cadastrados">
-        <span class="hint-bar"></span>
-        <span class="hint-bar"></span>
-        <span class="hint-bar"></span>
-      </button>
-      <span class="hint-label">Logins cadastrados</span>
+
+      <!-- Caixinha logins -->
+      <div class="login-hint-toggle">
+        <button class="login-hint-btn" onclick="toggleLogins(this)" title="Ver logins">
+          <span class="hint-bar"></span><span class="hint-bar"></span><span class="hint-bar"></span>
+        </button>
+        <span class="hint-label" data-i18n="login.hint">Logins cadastrados</span>
+      </div>
+      <div class="login-hint-box hidden" id="login-hint-box">
+        <table class="hint-table">
+          <thead><tr><th>Usuário</th><th>Senha</th><th>Perfil</th></tr></thead>
+          <tbody>
+            <tr><td>admin</td><td>admin123</td><td>Administrador</td></tr>
+            <tr><td>fabio.recepcao</td><td>fabio123</td><td>Recepcionista</td></tr>
+            <tr class="hint-sep"><td colspan="3">— Médicos —</td></tr>
+            <tr><td>ana.clinicageral</td><td>ana123</td><td>Clínica Geral</td></tr>
+            <tr><td>carlos.pediatria</td><td>carlos123</td><td>Pediatria</td></tr>
+            <tr><td>beatriz.cardiologia</td><td>beatriz123</td><td>Cardiologia</td></tr>
+            <tr><td>rafael.ortopedia</td><td>rafael123</td><td>Ortopedia</td></tr>
+            <tr><td>patricia.nutricao</td><td>patricia123</td><td>Nutrição</td></tr>
+            <tr><td>marcos.psicologia</td><td>marcos123</td><td>Psicologia</td></tr>
+            <tr class="hint-sep"><td colspan="3">— Pacientes —</td></tr>
+            <tr><td>maria.paciente</td><td>maria123</td><td>Paciente</td></tr>
+            <tr><td>joao.paciente</td><td>joao123</td><td>Paciente</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Idioma + Dark mode -->
+      <div class="login-bottom-bar">
+        <div class="lang-selector">
+          <i class="fa fa-globe"></i>
+          <button class="lang-btn active" id="lang-pt" onclick="setLang('pt')">PT</button>
+          <span class="lang-sep">|</span>
+          <button class="lang-btn" id="lang-en" onclick="setLang('en')">EN</button>
+        </div>
+        <button class="dark-toggle-btn" id="dark-toggle" onclick="DarkMode.toggle()" title="Modo escuro">
+          <i class="fa fa-moon"></i>
+        </button>
+      </div>
     </div>
-    <div class="login-hint-box hidden" id="login-hint-box">
-      <table class="hint-table">
-        <thead><tr><th>Usuário</th><th>Senha</th><th>Perfil</th></tr></thead>
-        <tbody>
-          <tr><td>admin</td><td>admin123</td><td>Administrador</td></tr>
-          <tr><td>fabio.recepcao</td><td>fabio123</td><td>Recepcionista</td></tr>
-          <tr class="hint-sep"><td colspan="3">— Médicos —</td></tr>
-          <tr><td>ana.clinicageral</td><td>ana123</td><td>Clínica Geral</td></tr>
-          <tr><td>carlos.pediatria</td><td>carlos123</td><td>Pediatria</td></tr>
-          <tr><td>beatriz.cardiologia</td><td>beatriz123</td><td>Cardiologia</td></tr>
-          <tr><td>rafael.ortopedia</td><td>rafael123</td><td>Ortopedia</td></tr>
-          <tr><td>patricia.nutricao</td><td>patricia123</td><td>Nutrição</td></tr>
-          <tr><td>marcos.psicologia</td><td>marcos123</td><td>Psicologia</td></tr>
-          <tr class="hint-sep"><td colspan="3">— Pacientes —</td></tr>
-          <tr><td>maria.paciente</td><td>maria123</td><td>Paciente</td></tr>
-          <tr><td>joao.paciente</td><td>joao123</td><td>Paciente</td></tr>
-        </tbody>
-      </table>
-    </div>
-    </div><!-- fim login-card -->
-  </div><!-- fim login-screen-inner -->
-</div><!-- fim login-screen -->
+  </div>
+</div>
 
 <!-- ── APP ───────────────────────────────────────────── -->
 <div id="app" class="app hidden">
 
-  <!-- TOPBAR MOBILE (visível só em telas ≤900px via CSS) -->
+  <!-- Topbar mobile -->
   <header class="topbar" id="topbar">
     <div class="topbar-brand">
-      <i class="fa-solid fa-heart-pulse"></i>
+      <svg viewBox="0 0 60 60" width="28" height="28" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0">
+        <ellipse cx="30" cy="28" rx="12" ry="14" fill="white" opacity="0.8"/>
+        <ellipse cx="24" cy="32" rx="7" ry="9" fill="white" opacity="0.6"/>
+        <ellipse cx="36" cy="32" rx="7" ry="9" fill="white" opacity="0.6"/>
+        <rect x="27" y="20" width="6" height="16" rx="2" fill="#1a73e8"/>
+        <rect x="22" y="25" width="16" height="6" rx="2" fill="#1a73e8"/>
+      </svg>
       <span>VitalCare</span>
     </div>
     <div class="topbar-right">
-      <div class="user-avatar" id="topbar-avatar"
-           style="width:32px;height:32px;font-size:12px;flex-shrink:0;">A</div>
-      <button class="hamburger" id="hamburger" aria-label="Abrir menu">
+      <button class="dark-toggle-btn topbar-dark" id="dark-toggle-top" onclick="DarkMode.toggle()" title="Dark mode">
+        <i class="fa fa-moon"></i>
+      </button>
+      <div class="user-avatar" id="topbar-avatar" style="width:32px;height:32px;font-size:12px">A</div>
+      <button class="hamburger" id="hamburger" aria-label="Menu">
         <span></span><span></span><span></span>
       </button>
     </div>
   </header>
 
-  <!-- OVERLAY (fecha sidebar ao tocar fora no mobile) -->
   <div class="sidebar-overlay" id="sidebar-overlay"></div>
 
-  <!-- SIDEBAR -->
+  <!-- Sidebar -->
   <aside id="sidebar" class="sidebar">
     <div class="sidebar-header">
-      <i class="fa-solid fa-heart-pulse"></i>
+      <svg viewBox="0 0 60 60" width="26" height="26" xmlns="http://www.w3.org/2000/svg">
+        <ellipse cx="30" cy="28" rx="12" ry="14" fill="white" opacity="0.7"/>
+        <ellipse cx="24" cy="32" rx="7" ry="9" fill="white" opacity="0.5"/>
+        <ellipse cx="36" cy="32" rx="7" ry="9" fill="white" opacity="0.5"/>
+        <rect x="27" y="20" width="6" height="16" rx="2" fill="#60a5fa"/>
+        <rect x="22" y="25" width="16" height="6" rx="2" fill="#60a5fa"/>
+      </svg>
       <span>VitalCare</span>
     </div>
     <nav id="sidebar-nav" class="sidebar-nav"></nav>
@@ -110,38 +153,31 @@
         <div id="user-name" class="user-name">–</div>
         <div id="user-role" class="user-role">–</div>
       </div>
-      <button id="logout-btn" class="btn-icon" title="Sair">
-        <i class="fa fa-right-from-bracket"></i>
-      </button>
+      <button id="logout-btn" class="btn-icon" title="Sair"><i class="fa fa-right-from-bracket"></i></button>
     </div>
   </aside>
 
-  <!-- CONTEÚDO PRINCIPAL -->
+  <!-- Conteúdo -->
   <main id="main-content" class="main-content">
     <div id="page-container"></div>
   </main>
-
 </div>
 
-<!-- TOAST -->
+<!-- Toast -->
 <div id="toast-container"></div>
 
-<!-- MODAL -->
+<!-- Modal -->
 <div id="modal-overlay" class="modal-overlay hidden">
   <div id="modal-box" class="modal-box">
-    <button id="modal-close" class="modal-close" title="Fechar">
-      <i class="fa fa-times"></i>
-    </button>
+    <button id="modal-close" class="modal-close"><i class="fa fa-times"></i></button>
     <div id="modal-content"></div>
   </div>
 </div>
 
-<!-- Widget VLibras -->
+<!-- VLibras -->
 <div vw class="enabled">
   <div vw-access-button class="active"></div>
-  <div vw-plugin-wrapper>
-    <div class="vw-plugin-top-wrapper"></div>
-  </div>
+  <div vw-plugin-wrapper><div class="vw-plugin-top-wrapper"></div></div>
 </div>
 <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
 <script>new window.VLibras.Widget('https://vlibras.gov.br/app');</script>
@@ -153,7 +189,12 @@ function toggleLogins(btn) {
   box.classList.toggle('hidden', open);
   btn.classList.toggle('open', !open);
 }
-// Preencher campos ao clicar numa linha da tabela
+function setLang(lang) {
+  Lang.set(lang);
+  document.getElementById('lang-pt').classList.toggle('active', lang==='pt');
+  document.getElementById('lang-en').classList.toggle('active', lang==='en');
+}
+// Preencher login ao clicar na linha
 document.addEventListener('click', function(e) {
   const tr = e.target.closest('.hint-table tbody tr:not(.hint-sep)');
   if (!tr) return;
@@ -165,7 +206,24 @@ document.addEventListener('click', function(e) {
     document.querySelector('.login-hint-btn').classList.remove('open');
   }
 });
+// Sincroniza dark toggle top
+function syncDarkButtons() {
+  const isDark = DarkMode._dark;
+  ['dark-toggle','dark-toggle-top'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.innerHTML = isDark ? '<i class="fa fa-sun"></i>' : '<i class="fa fa-moon"></i>';
+  });
+}
+const _origToggle = DarkMode.toggle;
+DarkMode.toggle = function() { _origToggle.call(DarkMode); syncDarkButtons(); };
+// Aplica lang salva
+document.addEventListener('DOMContentLoaded', () => {
+  const lang = localStorage.getItem('vc_lang') || 'pt';
+  setLang(lang);
+  syncDarkButtons();
+});
 </script>
+
 <script src="/js/api.js"></script>
 <script src="/js/utils.js"></script>
 <script src="/js/components.js"></script>

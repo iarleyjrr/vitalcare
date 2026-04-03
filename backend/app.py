@@ -740,8 +740,8 @@ def get_paciente(pid):
 @app.route('/api/pacientes', methods=['POST'])
 @require_auth
 def create_paciente():
-    # Apenas admin e recepcionista cadastram pacientes
-    if not is_admin_recepcao():
+    # Admin, recepcionista e médico podem cadastrar pacientes
+    if not (is_admin_recepcao() or is_medico()):
         return jsonify({'error':'Sem permissão'}), 403
     d = request.json or {}
     conn = get_db()
@@ -880,8 +880,15 @@ def update_consulta(cid):
 @app.route('/api/consultas/<int:cid>', methods=['DELETE'])
 @require_auth
 def cancel_consulta(cid):
-    if is_paciente() or is_medico():
-        return jsonify({'error':'Sem permissão para cancelar consultas'}), 403
+    # Paciente pode cancelar só as suas
+    if is_paciente():
+        conn = get_db()
+        consulta = conn.execute("SELECT id_paciente FROM consultas WHERE id=?", (cid,)).fetchone()
+        conn.close()
+        if not consulta or consulta['id_paciente'] != request.user['id_ref']:
+            return jsonify({'error':'Sem permissão para cancelar esta consulta'}), 403
+    elif is_medico():
+        return jsonify({'error':'Médicos não cancelam consultas — contate a recepção'}), 403
     conn = get_db()
     conn.execute("UPDATE consultas SET status='cancelada' WHERE id=?", (cid,))
     conn.execute("UPDATE faturas SET status='cancelado' WHERE id_consulta=?", (cid,))
@@ -1027,11 +1034,21 @@ def get_financeiro():
 @app.route('/api/financeiro/<int:fid>/pagar', methods=['POST'])
 @require_auth
 def pagar_fatura(fid):
-    # Admin e recepcionista podem registrar pagamentos no caixa
-    if not is_admin_recepcao():
-        return jsonify({'error':'Sem permissão'}), 403
     d = request.json or {}
     conn = get_db()
+    # Médico só pode confirmar pagamentos das suas próprias consultas
+    if is_medico():
+        mid = request.user['id_ref']
+        fatura = conn.execute(
+            "SELECT f.id FROM faturas f JOIN consultas c ON c.id=f.id_consulta WHERE f.id=? AND c.id_medico=?",
+            (fid, mid)
+        ).fetchone()
+        if not fatura:
+            conn.close()
+            return jsonify({'error':'Sem permissão para esta fatura'}), 403
+    elif not is_admin_recepcao():
+        conn.close()
+        return jsonify({'error':'Sem permissão'}), 403
     conn.execute(
         "UPDATE faturas SET status='pago', forma_pagamento=?, data_pagamento=datetime('now') WHERE id=?",
         (d.get('forma_pagamento','dinheiro'), fid)

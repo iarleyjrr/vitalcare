@@ -361,3 +361,32 @@ function renderDashAdmin(data) {
     </div>`;
   });
 }
+
+// ── Modal de detalhes da consulta (ícone olho) ───────────────────────────────
+function abrirDetalhesConsulta(consulta) {
+  const obs = consulta.observacoes
+    ? `<div style="background:#fff8e1;border:1px solid #f9d71c;border-radius:8px;padding:12px;margin-top:4px">
+         <b><i class="fa fa-notes-medical" style="color:#b45309"></i> Observações:</b>
+         <p style="margin-top:6px;color:#555">${consulta.observacoes}</p>
+       </div>`
+    : '<p class="text-muted text-small" style="margin-top:4px">Nenhuma observação registrada.</p>';
+
+  const tipoIcon = consulta.tipo === 'telemedicina'
+    ? '<span class="badge badge-purple"><i class="fa fa-video"></i> Telemedicina</span>'
+    : '<span class="badge badge-gray"><i class="fa fa-hospital"></i> Presencial</span>';
+
+  openModal(
+    '<h2 class="modal-title"><i class="fa fa-calendar-check"></i> Detalhes da Consulta</h2>' +
+    '<div style="display:grid;gap:14px">' +
+      '<div><b><i class="fa fa-user" style="color:var(--primary)"></i> Paciente:</b> ' + (consulta.paciente || consulta.paciente_nome || '–') + '</div>' +
+      '<div><b><i class="fa fa-stethoscope" style="color:var(--primary)"></i> Especialidade:</b> ' + (consulta.especialidade || '–') + '</div>' +
+      '<div><b><i class="fa fa-calendar" style="color:var(--primary)"></i> Data:</b> ' + Utils.fmtDateBR(consulta.data_hora) + ' às ' + Utils.fmtTime(consulta.data_hora) + '</div>' +
+      '<div><b><i class="fa fa-clinic-medical" style="color:var(--primary)"></i> Tipo:</b> ' + tipoIcon + '</div>' +
+      '<div><b><i class="fa fa-circle-check" style="color:var(--primary)"></i> Status:</b> ' + Utils.statusBadge(consulta.status) + '</div>' +
+      obs +
+    '</div>' +
+    '<div style="margin-top:20px;display:flex;gap:8px;justify-content:flex-end">' +
+      '<button class="btn btn-secondary" onclick="closeModal()">Fechar</button>' +
+    '</div>'
+  );
+}

@@ -133,8 +133,10 @@ async function loadConsultas() {
         });
       }
 
-      // Cancelar
-      if (['admin','recepcionista'].includes(user.perfil) && !['cancelada','realizada'].includes(c.status)) {
+      // Cancelar — admin, recepcionista e paciente (suas próprias)
+      const podeCancelar = ['admin','recepcionista'].includes(user.perfil) ||
+        (user.perfil === 'paciente' && !['cancelada','realizada'].includes(c.status));
+      if (podeCancelar && !['cancelada','realizada'].includes(c.status)) {
         actions.push({ icon:'times-circle', title:'Cancelar', cls:'btn-danger btn-sm',
           fn: async (c) => {
             if (!confirm('Deseja cancelar esta consulta?')) return;

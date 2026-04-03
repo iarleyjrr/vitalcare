@@ -820,3 +820,136 @@ tbody tr:last-child { border-bottom: none; }
   min-width: 34px; min-height: 34px;
 }
 .btn-ver-consulta:hover { background: var(--primary); color: #fff; border-color: var(--primary); }
+
+/* ══════════════════════════════════════════════════════
+   DARK MODE
+   ══════════════════════════════════════════════════════ */
+:root.dark {
+  --bg:        #0f172a;
+  --card-bg:   #1e293b;
+  --border:    #334155;
+  --text:      #e2e8f0;
+  --text-muted:#94a3b8;
+  --sidebar-bg:#020617;
+  --primary-lt:#1e3a5f;
+}
+.dark body          { background: var(--bg); color: var(--text); }
+.dark .card         { background: var(--card-bg); border-color: var(--border); }
+.dark .login-card   { background: #1e293b; }
+.dark .form-group input,
+.dark .form-group select,
+.dark .form-group textarea { background: #0f172a; color: var(--text); border-color: var(--border); }
+.dark .search-bar   { background: #1e293b; border-color: var(--border); }
+.dark .search-bar input { color: var(--text); }
+.dark thead th      { background: #0f172a; color: var(--text-muted); border-color: var(--border); }
+.dark tbody tr:hover{ background: #1e293b; }
+.dark tbody td      { color: var(--text); }
+.dark .stat-card    { background: var(--card-bg); border-color: var(--border); }
+.dark .modal-box    { background: #1e293b; }
+.dark .btn-secondary{ background: #1e293b; color: var(--text); border-color: var(--border); }
+.dark .login-hint-box { border-color: var(--border); }
+.dark .hint-table thead th { background: #0f172a; }
+.dark .hint-table tbody tr:hover:not(.hint-sep) { background: var(--primary-lt); }
+.dark .hint-table tbody td { color: var(--text); }
+.dark .page-title   { color: var(--text); }
+.dark .agenda-card  { background: #1e3a5f; }
+.dark .ag-confirm-card { background: #1e3a5f; border-color: #2d4a6f; }
+.dark .form-novo-pac-wrap { background: #0f2a1f; border-color: #166534; }
+.dark .slots-grid .slot-btn { background: #1e293b; color: var(--text); border-color: var(--border); }
+.dark .pront-header { background: linear-gradient(135deg, #020617, #0f172a); }
+.dark .nav-group-label { color: rgba(255,255,255,.25); }
+.dark .login-bottom-bar { border-top-color: var(--border); }
+
+/* ── DARK TOGGLE BOTÃO ────────────────────────────────── */
+.dark-toggle-btn {
+  background: transparent; border: 1.5px solid var(--border);
+  border-radius: 8px; color: var(--text-muted); cursor: pointer;
+  padding: 7px 10px; font-size: 15px; transition: all var(--transition);
+  display: flex; align-items: center; gap: 6px;
+  -webkit-tap-highlight-color: transparent;
+}
+.dark-toggle-btn:hover { border-color: var(--primary); color: var(--primary); }
+.topbar-dark { border-color: rgba(255,255,255,.2); color: rgba(255,255,255,.7); }
+.topbar-dark:hover { border-color: #fff; color: #fff; }
+
+/* ── SELETOR DE IDIOMA ────────────────────────────────── */
+.login-bottom-bar {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-top: 16px; padding-top: 14px;
+  border-top: 1px solid var(--border);
+}
+.lang-selector { display: flex; align-items: center; gap: 6px; color: var(--text-muted); font-size: 13px; }
+.lang-selector i { font-size: 14px; }
+.lang-btn {
+  background: transparent; border: 1.5px solid var(--border); border-radius: 6px;
+  color: var(--text-muted); cursor: pointer; padding: 4px 10px; font-size: 12px;
+  font-weight: 600; transition: all var(--transition);
+}
+.lang-btn.active { background: var(--primary); border-color: var(--primary); color: #fff; }
+.lang-btn:hover:not(.active) { border-color: var(--primary); color: var(--primary); }
+.lang-sep { color: var(--border); }
+
+/* ── LOGO VITALCARE (SVG marca de nascença) ───────────── */
+.vitalcare-logo { display: flex; align-items: center; justify-content: center; margin-bottom: 4px; }
+
+/* ── MÉDICOS — GRID LADO A LADO ──────────────────────── */
+.doctor-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px,1fr)); gap: 16px; }
+.doctor-card  { padding: 20px; cursor: pointer; transition: all .2s ease; border-radius: var(--radius); }
+.doctor-card:hover { box-shadow: 0 8px 24px rgba(26,115,232,.18); transform: translateY(-2px); border-color: var(--primary); }
+.doctor-card-header { width: 80px; height: 80px; margin-bottom: 12px; }
+.doctor-card-photo  {
+  width: 80px; height: 80px; border-radius: 50%;
+  object-fit: cover; object-position: top;
+  border: 3px solid var(--primary-lt);
+  box-shadow: 0 3px 10px rgba(0,0,0,.12);
+}
+.doctor-card-avatar {
+  width: 80px !important; height: 80px !important;
+  font-size: 26px !important; margin-bottom: 0 !important; border-radius: 50%;
+}
+
+/* ── BOTÃO VER (olho) ─────────────────────────────────── */
+.btn-ver-consulta {
+  background: rgba(26,115,232,.1); border: 1px solid rgba(26,115,232,.25);
+  border-radius: 8px; color: var(--primary); cursor: pointer;
+  padding: 7px 9px; font-size: 14px; flex-shrink: 0;
+  transition: all var(--transition);
+  display: flex; align-items: center; justify-content: center;
+  min-width: 36px; min-height: 36px;
+}
+.btn-ver-consulta:hover { background: var(--primary); color: #fff; }
+
+/* ── TAG OBSERVAÇÕES ──────────────────────────────────── */
+.ag-obs-tag {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: #fff8e1; border: 1px solid #f9d71c;
+  border-radius: 6px; padding: 4px 10px;
+  font-size: 12px; color: #7c5700; margin-top: 6px;
+}
+.ag-obs-tag i { color: #b45309; flex-shrink: 0; }
+.dark .ag-obs-tag { background: #2d2000; border-color: #7c5700; color: #fcd34d; }
+
+/* ── BANNER MÉDICO NO AGENDAMENTO ─────────────────────── */
+.ag-medico-banner {
+  display: flex; align-items: center; gap: 12px;
+  background: var(--primary-lt); border: 1.5px solid #c5d8f8;
+  border-radius: 10px; padding: 12px 16px; margin: 12px 0;
+}
+
+/* ── CONFIRMAÇÃO AGENDAMENTO ──────────────────────────── */
+.ag-confirm-card { background: var(--primary-lt); border: 1.5px solid #c5d8f8; border-radius: 14px; padding: 20px; margin: 16px 0; }
+.ag-confirm-medico { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid #c5d8f8; }
+.ag-confirm-foto   { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: 3px solid #fff; box-shadow: 0 2px 8px rgba(0,0,0,.15); flex-shrink: 0; }
+.ag-confirm-avatar { width: 60px !important; height: 60px !important; font-size: 20px !important; margin-bottom: 0 !important; flex-shrink: 0; }
+.ag-confirm-info   { display: flex; flex-direction: column; gap: 8px; }
+.ag-confirm-row    { display: flex; align-items: center; gap: 10px; font-size: 14px; }
+.ag-confirm-row i  { width: 16px; color: var(--primary); flex-shrink: 0; }
+.ag-confirm-valor  { font-weight: 700; font-size: 16px; color: var(--secondary); }
+
+@media (max-width: 480px) {
+  .doctor-cards { grid-template-columns: 1fr 1fr; gap: 10px; }
+  .doctor-card  { padding: 14px; }
+  .doctor-card-header { width: 60px; height: 60px; }
+  .doctor-card-photo, .doctor-card-avatar { width: 60px !important; height: 60px !important; }
+  .login-bottom-bar { flex-direction: column; gap: 10px; align-items: flex-start; }
+}
