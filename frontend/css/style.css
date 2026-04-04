@@ -82,7 +82,7 @@ a   { color: var(--primary); text-decoration: none; }
 .form-group textarea {
   width: 100%; padding: 10px 13px;
   border: 1.5px solid var(--border); border-radius: 8px;
-  font-size: 14px; background: #fff; color: var(--text);
+  font-size: 14px; background: var(--card-bg); color: var(--text);
   transition: border var(--transition), box-shadow var(--transition);
   outline: none;
   -webkit-appearance: none;
