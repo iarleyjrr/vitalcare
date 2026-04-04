@@ -7,7 +7,7 @@
 <title>VitalCare – Sistema de Gestão Clínica</title>
 <link rel="stylesheet" href="/css/style.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-<!-- i18n + dark mode antes de tudo para evitar flash -->
+<!-- i18n.js carregado no head SEM acessar DOM — apenas define Lang e DarkMode -->
 <script src="/js/i18n.js"></script>
 </head>
 <body>
@@ -16,49 +16,43 @@
 <div id="login-screen" class="login-screen">
   <div class="login-screen-inner">
 
-    <!-- Painel lateral imagem -->
     <div class="login-side-image">
       <div class="login-side-text">
-        <h2 data-i18n="login.side_title">Cuidando de quem cuida de você</h2>
-        <p data-i18n="login.side_desc">Agendamento online, prontuários digitais e gestão completa para sua clínica.</p>
+        <h2>Cuidando de quem cuida de você</h2>
+        <p>Agendamento online, prontuários digitais e gestão completa para sua clínica.</p>
       </div>
     </div>
 
-    <!-- Formulário -->
     <div class="login-card">
-      <!-- Logo -->
       <div class="login-logo">
         <div class="vitalcare-logo">
           <svg viewBox="0 0 60 60" width="56" height="56" xmlns="http://www.w3.org/2000/svg">
-            <!-- Marca de nascença estilizada como logo médica -->
             <circle cx="30" cy="30" r="28" fill="#1a73e8" opacity="0.12"/>
             <circle cx="30" cy="30" r="20" fill="#1a73e8" opacity="0.18"/>
-            <!-- Formato orgânico inspirado na marca -->
             <ellipse cx="30" cy="28" rx="12" ry="14" fill="#1a73e8" opacity="0.7"/>
             <ellipse cx="24" cy="32" rx="7" ry="9" fill="#1a73e8" opacity="0.5"/>
             <ellipse cx="36" cy="32" rx="7" ry="9" fill="#1a73e8" opacity="0.5"/>
             <ellipse cx="30" cy="22" rx="9" ry="7" fill="#1a73e8" opacity="0.6"/>
-            <!-- Cruz médica central em branco -->
             <rect x="27" y="20" width="6" height="16" rx="2" fill="white"/>
             <rect x="22" y="25" width="16" height="6" rx="2" fill="white"/>
           </svg>
         </div>
-        <h1 data-i18n="login.title">VitalCare</h1>
-        <p data-i18n="login.subtitle">Sistema de Gestão Clínica</p>
+        <!-- Textos do login sem data-i18n para não mostrar chave como texto -->
+        <h1 id="login-title">VitalCare</h1>
+        <p id="login-subtitle">Sistema de Gestão Clínica</p>
       </div>
 
-      <!-- Formulário de login -->
       <form id="login-form">
         <div class="form-group">
-          <label><i class="fa fa-user"></i> <span data-i18n="login.user">Usuário</span></label>
-          <input type="text" id="login-input" data-i18n-placeholder="login.user" placeholder="login" autocomplete="username">
+          <label><i class="fa fa-user"></i> <span id="lbl-user">Usuário</span></label>
+          <input type="text" id="login-input" placeholder="login" autocomplete="username">
         </div>
         <div class="form-group">
-          <label><i class="fa fa-lock"></i> <span data-i18n="login.password">Senha</span></label>
-          <input type="password" id="senha-input" data-i18n-placeholder="login.password" placeholder="senha" autocomplete="current-password">
+          <label><i class="fa fa-lock"></i> <span id="lbl-pass">Senha</span></label>
+          <input type="password" id="senha-input" placeholder="senha" autocomplete="current-password">
         </div>
         <button type="submit" class="btn btn-primary btn-block">
-          <i class="fa fa-right-to-bracket"></i> <span data-i18n="login.enter">Entrar</span>
+          <i class="fa fa-right-to-bracket"></i> <span id="lbl-enter">Entrar</span>
         </button>
         <div id="login-error" class="error-msg"></div>
       </form>
@@ -68,7 +62,7 @@
         <button class="login-hint-btn" onclick="toggleLogins(this)" title="Ver logins">
           <span class="hint-bar"></span><span class="hint-bar"></span><span class="hint-bar"></span>
         </button>
-        <span class="hint-label" data-i18n="login.hint">Logins cadastrados</span>
+        <span class="hint-label" id="lbl-hint">Logins cadastrados</span>
       </div>
       <div class="login-hint-box hidden" id="login-hint-box">
         <table class="hint-table">
@@ -109,7 +103,6 @@
 <!-- ── APP ───────────────────────────────────────────── -->
 <div id="app" class="app hidden">
 
-  <!-- Topbar mobile -->
   <header class="topbar" id="topbar">
     <div class="topbar-brand">
       <svg viewBox="0 0 60 60" width="28" height="28" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0">
@@ -122,7 +115,7 @@
       <span>VitalCare</span>
     </div>
     <div class="topbar-right">
-      <button class="dark-toggle-btn topbar-dark" id="dark-toggle-top" onclick="DarkMode.toggle()" title="Dark mode">
+      <button class="dark-toggle-btn topbar-dark" id="dark-toggle-top" onclick="DarkMode.toggle()">
         <i class="fa fa-moon"></i>
       </button>
       <div class="user-avatar" id="topbar-avatar" style="width:32px;height:32px;font-size:12px">A</div>
@@ -134,7 +127,6 @@
 
   <div class="sidebar-overlay" id="sidebar-overlay"></div>
 
-  <!-- Sidebar -->
   <aside id="sidebar" class="sidebar">
     <div class="sidebar-header">
       <svg viewBox="0 0 60 60" width="26" height="26" xmlns="http://www.w3.org/2000/svg">
@@ -157,7 +149,6 @@
     </div>
   </aside>
 
-  <!-- Conteúdo -->
   <main id="main-content" class="main-content">
     <div id="page-container"></div>
   </main>
@@ -182,48 +173,7 @@
 <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
 <script>new window.VLibras.Widget('https://vlibras.gov.br/app');</script>
 
-<script>
-function toggleLogins(btn) {
-  const box = document.getElementById('login-hint-box');
-  const open = !box.classList.contains('hidden');
-  box.classList.toggle('hidden', open);
-  btn.classList.toggle('open', !open);
-}
-function setLang(lang) {
-  Lang.set(lang);
-  document.getElementById('lang-pt').classList.toggle('active', lang==='pt');
-  document.getElementById('lang-en').classList.toggle('active', lang==='en');
-}
-// Preencher login ao clicar na linha
-document.addEventListener('click', function(e) {
-  const tr = e.target.closest('.hint-table tbody tr:not(.hint-sep)');
-  if (!tr) return;
-  const cells = tr.querySelectorAll('td');
-  if (cells.length >= 2) {
-    document.getElementById('login-input').value = cells[0].textContent.trim();
-    document.getElementById('senha-input').value = cells[1].textContent.trim();
-    document.getElementById('login-hint-box').classList.add('hidden');
-    document.querySelector('.login-hint-btn').classList.remove('open');
-  }
-});
-// Sincroniza dark toggle top
-function syncDarkButtons() {
-  const isDark = DarkMode._dark;
-  ['dark-toggle','dark-toggle-top'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.innerHTML = isDark ? '<i class="fa fa-sun"></i>' : '<i class="fa fa-moon"></i>';
-  });
-}
-const _origToggle = DarkMode.toggle;
-DarkMode.toggle = function() { _origToggle.call(DarkMode); syncDarkButtons(); };
-// Aplica lang salva
-document.addEventListener('DOMContentLoaded', () => {
-  const lang = localStorage.getItem('vc_lang') || 'pt';
-  setLang(lang);
-  syncDarkButtons();
-});
-</script>
-
+<!-- Scripts principais — DEPOIS do DOM -->
 <script src="/js/api.js"></script>
 <script src="/js/utils.js"></script>
 <script src="/js/components.js"></script>
@@ -236,5 +186,66 @@ document.addEventListener('DOMContentLoaded', () => {
 <script src="/js/pages/financeiro.js"></script>
 <script src="/js/pages/relatorios.js"></script>
 <script src="/js/app.js"></script>
+
+<!-- Inicialização do i18n APÓS todos os scripts carregarem -->
+<script>
+function toggleLogins(btn) {
+  const box = document.getElementById('login-hint-box');
+  const open = !box.classList.contains('hidden');
+  box.classList.toggle('hidden', open);
+  btn.classList.toggle('open', !open);
+}
+
+function applyLoginLang(lang) {
+  const map = {
+    'login-title':    lang === 'en' ? 'VitalCare'                : 'VitalCare',
+    'login-subtitle': lang === 'en' ? 'Clinic Management System' : 'Sistema de Gestão Clínica',
+    'lbl-user':       lang === 'en' ? 'Username'                 : 'Usuário',
+    'lbl-pass':       lang === 'en' ? 'Password'                 : 'Senha',
+    'lbl-enter':      lang === 'en' ? 'Sign In'                  : 'Entrar',
+    'lbl-hint':       lang === 'en' ? 'Registered logins'        : 'Logins cadastrados',
+  };
+  Object.entries(map).forEach(([id, text]) => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = text;
+  });
+  const inp = document.getElementById('login-input');
+  const pass = document.getElementById('senha-input');
+  if (inp) inp.placeholder = lang === 'en' ? 'username' : 'login';
+  if (pass) pass.placeholder = lang === 'en' ? 'password' : 'senha';
+  // Atualizar botões de idioma
+  document.getElementById('lang-pt')?.classList.toggle('active', lang === 'pt');
+  document.getElementById('lang-en')?.classList.toggle('active', lang === 'en');
+}
+
+function setLang(lang) {
+  Lang.set(lang);
+  applyLoginLang(lang);
+}
+
+// Preencher login ao clicar na linha
+document.addEventListener('click', function(e) {
+  const tr = e.target.closest('.hint-table tbody tr:not(.hint-sep)');
+  if (!tr) return;
+  const cells = tr.querySelectorAll('td');
+  if (cells.length >= 2) {
+    document.getElementById('login-input').value = cells[0].textContent.trim();
+    document.getElementById('senha-input').value = cells[1].textContent.trim();
+    document.getElementById('login-hint-box').classList.add('hidden');
+    document.querySelector('.login-hint-btn')?.classList.remove('open');
+  }
+});
+
+// Inicializar ao carregar
+document.addEventListener('DOMContentLoaded', function() {
+  // Sincronizar ícones dark mode
+  DarkMode._updateIcons();
+  // Aplicar idioma salvo
+  const lang = Lang._lang;
+  applyLoginLang(lang);
+  document.getElementById('lang-pt')?.classList.toggle('active', lang === 'pt');
+  document.getElementById('lang-en')?.classList.toggle('active', lang === 'en');
+});
+</script>
 </body>
 </html>
