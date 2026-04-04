@@ -410,7 +410,7 @@ async function agStep5(c) {
     </div>
     <div class="form-group" style="margin-top:16px">
       <label><i class="fa fa-notes-medical"></i> ${Lang.t('appt.obs')}</label>
-      <textarea id="ag-obs" rows="2" placeholder="Ex: paciente em jejum, queixa principal..."></textarea>
+      <textarea id="ag-obs" rows="2" placeholder="${Lang.t('appt.obs_ph')}"></textarea>
     </div>
     <button class="btn btn-primary btn-block" id="ag-confirmar" style="margin-top:8px">
       <i class="fa fa-calendar-check"></i> ${Lang.t('appt.btn_confirm')}
