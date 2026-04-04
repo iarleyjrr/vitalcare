@@ -120,7 +120,7 @@ async function agStep1(c) {
   try {
     const esps = await API.especialidades();
     const colors = ['blue','green','orange','purple','red','teal'];
-    let html = '<h3 style="margin-bottom:16px">Selecione a especialidade</h3><div class="doctor-cards">';
+    let html = '<h3 style="margin-bottom:16px">${Lang.get('appt.select_specialty')||'Selecione a especialidade'}</h3><div class="doctor-cards">';
     esps.forEach((e, i) => {
       html += `<div class="card doctor-card" onclick="agSelectEsp(${e.id},'${e.nome.replace(/'/g,"\\'")}')">
         <div class="doctor-avatar" style="background:var(--${colors[i%colors.length]},var(--primary))">
@@ -144,7 +144,7 @@ function agSelectEsp(id, nome) {
 async function agStep2(c) {
   try {
     const medicos = await API.medicos(_agData.especialidade_id);
-    let html = `<h3 style="margin-bottom:16px">Selecione o médico</h3>
+    let html = `<h3 style="margin-bottom:16px">${Lang.get('appt.select_doctor')||'Selecione o médico'}</h3>
       <button class="btn btn-secondary btn-sm" onclick="_agStep--;renderAgStepper();renderAgStep()">
         <i class="fa fa-arrow-left"></i> Voltar
       </button>
@@ -161,7 +161,7 @@ async function agStep2(c) {
         <div class="doctor-name">${m.nome}</div>
         <div class="doctor-esp"><i class="fa fa-stethoscope"></i> ${m.especialidade_nome}</div>
         <div class="text-small mt-4 text-muted"><i class="fa fa-id-card"></i> ${m.crm}</div>
-        ${m.bio ? `<div class="text-small mt-4" style="color:#555">${m.bio}</div>` : ''}
+        ${m.bio ? `<div class="text-small mt-4" style="color:var(--text-muted)">${m.bio}</div>` : ''}
       </div>`;
     });
     html += '</div>';
@@ -188,7 +188,7 @@ async function agStep3(c) {
   const voltarBtn = perfil !== 'medico'
     ? `<button class="btn btn-secondary btn-sm" style="margin-bottom:12px"
          onclick="_agStep--;renderAgStepper();renderAgStep()">
-         <i class="fa fa-arrow-left"></i> Voltar
+         <i class='fa fa-arrow-left'></i> ${Lang.get('appt.back')||'Voltar'}
        </button>` : '';
 
   const medicoInfo = (perfil === 'medico' && _agData.medico_nome)
@@ -205,7 +205,7 @@ async function agStep3(c) {
        </div>` : '';
 
   c.innerHTML = `
-    <h3 style="margin-bottom:12px">Selecione a data e horário</h3>
+    <h3 style="margin-bottom:12px">${Lang.get('appt.select_datetime')||'Selecione a data e horário'}</h3>
     ${voltarBtn}
     ${medicoInfo}
     <div class="form-row" style="margin-top:12px;max-width:420px">
@@ -261,17 +261,17 @@ function agSelectSlot(datetime, hora) {
 // ── STEP 4: Paciente ──────────────────────────────────────────────────────────
 async function agStep4(c) {
   c.innerHTML = `
-    <h3 style="margin-bottom:12px">Selecione ou cadastre o paciente</h3>
+    <h3 style="margin-bottom:12px">${Lang.get('appt.select_patient')||'Selecione ou cadastre o paciente'}</h3>
     <button class="btn btn-secondary btn-sm" onclick="_agStep--;renderAgStepper();renderAgStep()">
       <i class="fa fa-arrow-left"></i> Voltar
     </button>
     <div style="margin:14px 0">
       <button class="btn btn-success btn-sm" id="btn-novo-pac-ag">
-        <i class="fa fa-user-plus"></i> Novo paciente
+        <i class="fa fa-user-plus"></i> ${Lang.get('appt.new_patient')||'Novo paciente'}
       </button>
     </div>
-    <div id="form-novo-pac" class="hidden" style="background:#f0fdf4;border:1.5px solid #86efac;border-radius:12px;padding:16px;margin-bottom:16px">
-      <div style="font-weight:700;margin-bottom:12px;color:#15803d"><i class="fa fa-user-plus"></i> Cadastrar novo paciente</div>
+    <div id="form-novo-pac" class="hidden" class="form-novo-pac-dark-fix">
+      <div style="font-weight:700;margin-bottom:12px;color:var(--secondary)"><i class="fa fa-user-plus"></i> ${Lang.get('appt.new_patient')||'Cadastrar novo paciente'}</div>
       <div class="form-row">
         <div class="form-group"><label>Nome completo *</label><input id="np-nome" placeholder="Nome do paciente"></div>
         <div class="form-group"><label>CPF *</label><input id="np-cpf" placeholder="000.000.000-00"></div>
@@ -294,12 +294,12 @@ async function agStep4(c) {
         <div class="form-group"><label>Nº Carteirinha</label><input id="np-cart" placeholder="Número"></div>
       </div>
       <div style="display:flex;gap:8px;margin-top:4px">
-        <button class="btn btn-success" id="btn-salvar-novo-pac"><i class="fa fa-save"></i> Cadastrar e selecionar</button>
+        <button class="btn btn-success" id="btn-salvar-novo-pac"><i class="fa fa-save"></i> ${Lang.get('general.save_select')||'Cadastrar e selecionar'}</button>
         <button class="btn btn-secondary" onclick="document.getElementById('form-novo-pac').classList.add('hidden')">Cancelar</button>
       </div>
       <div id="np-error" class="error-msg"></div>
     </div>
-    <div style="font-weight:600;margin-bottom:8px;color:var(--text-muted)"><i class="fa fa-users"></i> Pacientes cadastrados</div>
+    <div style="font-weight:600;margin-bottom:8px;color:var(--text-muted)"><i class="fa fa-users"></i> ${Lang.get('appt.registered_patients')||'Pacientes cadastrados'}</div>
     <div id="ag-pac-search-wrap"></div>
     <div class="card" style="margin-top:8px">
       <div class="table-wrapper">
@@ -378,7 +378,7 @@ async function agStep5(c) {
   _agData.valor = valores[_agData.especialidade_nome] || 200;
   const foto = MEDICO_FOTOS[_agData.medico_id];
   c.innerHTML = `
-    <h3 style="margin-bottom:12px"><i class="fa fa-check-circle" style="color:var(--secondary)"></i> Confirme o Agendamento</h3>
+    <h3 style="margin-bottom:12px"><i class="fa fa-check-circle" style="color:var(--secondary)"></i> ${Lang.get('appt.confirm_title')||'Confirme o Agendamento'}</h3>
     <button class="btn btn-secondary btn-sm" onclick="_agStep--;renderAgStepper();renderAgStep()">
       <i class="fa fa-arrow-left"></i> Voltar
     </button>

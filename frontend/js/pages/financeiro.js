@@ -137,7 +137,7 @@ async function loadFinanceiro() {
 function openPagamento(fatura) {
   openModal(`
     <h2 class="modal-title"><i class="fa fa-money-bill"></i> Registrar Pagamento</h2>
-    <div style="background:#f0fdf4;border:1px solid #86efac;border-radius:10px;padding:14px;margin-bottom:16px">
+    <div class="resumo-fin-box">
       <div><b>Paciente:</b> ${fatura.paciente_nome}</div>
       <div><b>Valor:</b> <span style="font-size:20px;font-weight:800;color:var(--secondary)">${Utils.fmtMoney(fatura.valor)}</span></div>
     </div>

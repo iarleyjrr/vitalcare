@@ -995,8 +995,7 @@ tbody tr:last-child { border-bottom: none; }
 /* ── LOGO VITALCARE (SVG marca de nascença) ───────────── */
 .vitalcare-logo { display: flex; align-items: center; justify-content: center; margin-bottom: 4px; }
 
-/* ── MÉDICOS — GRID LADO A LADO ──────────────────────── */
-.doctor-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px,1fr)); gap: 16px; }
+/* .doctor-cards — definido em bloco único abaixo */
 .doctor-card  { padding: 20px; cursor: pointer; transition: all .2s ease; border-radius: var(--radius); }
 .doctor-card:hover { box-shadow: 0 8px 24px rgba(26,115,232,.18); transform: translateY(-2px); border-color: var(--primary); }
 .doctor-card-header { width: 80px; height: 80px; margin-bottom: 12px; }
@@ -1056,3 +1055,56 @@ tbody tr:last-child { border-bottom: none; }
   .doctor-card-photo, .doctor-card-avatar { width: 60px !important; height: 60px !important; }
   .login-bottom-bar { flex-direction: column; gap: 10px; align-items: flex-start; }
 }
+
+/* ── AUTOFILL DO BROWSER NO DARK MODE ────────────────── */
+.dark input:-webkit-autofill,
+.dark input:-webkit-autofill:hover,
+.dark input:-webkit-autofill:focus,
+.dark select:-webkit-autofill,
+.dark textarea:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0px 1000px #0f172a inset !important;
+  -webkit-text-fill-color: #e2e8f0 !important;
+  caret-color: #e2e8f0 !important;
+  border-color: #334155 !important;
+}
+
+/* ── FORM NOVO PACIENTE — dark mode via CSS ────────────── */
+.form-novo-pac-dark-fix {
+  background: var(--info-bg, #f0fdf4);
+  border: 1.5px solid var(--info-border, #86efac);
+  border-radius: 12px; padding: 16px; margin-bottom: 16px;
+}
+.dark .form-novo-pac-dark-fix {
+  background: #0d1f1a !important;
+  border-color: #1a4a35 !important;
+}
+.dark .form-novo-pac-dark-fix h4 { color: #4ade80 !important; }
+
+/* ── FINANCEIRO RESUMO — dark mode ──────────────────────── */
+.resumo-fin-box {
+  background: #f0fdf4; border: 1px solid #86efac;
+  border-radius: 10px; padding: 14px; margin-bottom: 16px;
+}
+.dark .resumo-fin-box {
+  background: #0d1f1a !important;
+  border-color: #1a4a35 !important;
+}
+
+/* ── OBSERVAÇÕES MODAL — dark mode ──────────────────────── */
+.obs-box {
+  background: #fff8e1; border: 1px solid #f9d71c;
+  border-radius: 8px; padding: 12px; margin-top: 4px;
+}
+.dark .obs-box {
+  background: #1a1400 !important;
+  border-color: #7c5700 !important;
+}
+.obs-box p { color: var(--text-muted); }
+.dark .obs-box p { color: #fcd34d !important; }
+
+/* ── CARD INFO MÉDICO — dark mode ───────────────────────── */
+.info-row-box {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px; background: var(--bg); border-radius: 8px;
+}
+.dark .info-row-box { background: #0f172a; }

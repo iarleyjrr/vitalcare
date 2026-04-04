@@ -36,7 +36,7 @@ const Components = {
       <div class="doctor-name">${medico.nome}</div>
       <div class="doctor-esp"><i class="fa fa-stethoscope"></i> ${medico.especialidade_nome}</div>
       <div class="text-muted text-small mt-4"><i class="fa fa-id-card"></i> CRM ${medico.crm}</div>
-      ${medico.bio ? `<div class="text-small mt-4" style="color:#555">${medico.bio}</div>` : ''}
+      ${medico.bio ? `<div class="text-small mt-4" style="color:var(--text-muted)">${medico.bio}</div>` : ''}
     `;
     if (onClick) div.addEventListener('click', () => onClick(medico));
     return div;

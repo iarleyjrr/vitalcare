@@ -107,16 +107,16 @@ async function abrirDetalhesMedico(mid) {
     </div>
 
     <div style="display:grid;gap:12px;padding:0 4px">
-      <div style="display:flex;align-items:center;gap:10px;padding:10px;background:var(--bg);border-radius:8px">
+      <div class="info-row-box">
         <i class="fa fa-id-card" style="color:var(--primary);width:18px"></i>
         <div><div style="font-size:11px;color:var(--text-muted)">CRM</div><div style="font-weight:600">${m.crm}</div></div>
       </div>
-      <div style="display:flex;align-items:center;gap:10px;padding:10px;background:var(--bg);border-radius:8px">
+      <div class="info-row-box">
         <i class="fa fa-envelope" style="color:var(--primary);width:18px"></i>
         <div><div style="font-size:11px;color:var(--text-muted)">E-mail</div><div style="font-weight:600">${m.email}</div></div>
       </div>
       ${m.telefone ? `
-      <div style="display:flex;align-items:center;gap:10px;padding:10px;background:var(--bg);border-radius:8px">
+      <div class="info-row-box">
         <i class="fa fa-phone" style="color:var(--primary);width:18px"></i>
         <div><div style="font-size:11px;color:var(--text-muted)">Telefone</div><div style="font-weight:600">${m.telefone}</div></div>
       </div>` : ''}
