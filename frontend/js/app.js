@@ -182,9 +182,9 @@ const App = {
       const el = document.createElement('div');
       el.className    = 'nav-item';
       el.dataset.page = item.id;
-      const label = item.i18n ? Lang.get(item.i18n) : item.label;
+      const label = item.i18n ? Lang.t(item.i18n) : item.label;
       el.innerHTML    = `<i class="fa fa-${item.icon}"></i><span>${label}</span>`;
-      el.dataset.i18nKey = item.i18n || '';
+      if (item.i18n) el.dataset.i18nKey = item.i18n;
       el.addEventListener('click', () => App.navigate(item.id));
       nav.appendChild(el);
     });
@@ -229,6 +229,8 @@ const App = {
         </div>`;
     }
 
+    // Aplicar idioma atual
+    try { Lang._applyLogin(Lang._lang); } catch(e) {}
     // Scroll ao topo do conteúdo
     const main = document.getElementById('main-content');
     if (main) main.scrollTop = 0;

@@ -1070,24 +1070,24 @@ tbody tr:last-child { border-bottom: none; }
 
 /* ── FORM NOVO PACIENTE — dark mode via CSS ────────────── */
 .form-novo-pac-dark-fix {
-  background: var(--info-bg, #f0fdf4);
-  border: 1.5px solid var(--info-border, #86efac);
+  background: var(--primary-lt);
+  border: 1.5px solid #c5d8f8;
   border-radius: 12px; padding: 16px; margin-bottom: 16px;
 }
 .dark .form-novo-pac-dark-fix {
-  background: #0d1f1a !important;
-  border-color: #1a4a35 !important;
+  background: #0f1e36 !important;
+  border-color: #1e3864 !important;
 }
-.dark .form-novo-pac-dark-fix h4 { color: #4ade80 !important; }
+.dark .form-novo-pac-dark-fix label { color: #93c5fd !important; }
 
 /* ── FINANCEIRO RESUMO — dark mode ──────────────────────── */
 .resumo-fin-box {
-  background: #f0fdf4; border: 1px solid #86efac;
+  background: var(--primary-lt); border: 1px solid #c5d8f8;
   border-radius: 10px; padding: 14px; margin-bottom: 16px;
 }
 .dark .resumo-fin-box {
-  background: #0d1f1a !important;
-  border-color: #1a4a35 !important;
+  background: #0f1e36 !important;
+  border-color: #1e3864 !important;
 }
 
 /* ── OBSERVAÇÕES MODAL — dark mode ──────────────────────── */

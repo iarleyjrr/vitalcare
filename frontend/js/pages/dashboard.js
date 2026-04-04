@@ -32,18 +32,18 @@ function renderDashPaciente(data) {
       <div class="stat-card">
         <div class="stat-icon green"><i class="fa fa-calendar-check"></i></div>
         <div><div class="stat-value">${s.total_consultas_realizadas || 0}</div>
-             <div class="stat-label">Consultas realizadas</div></div>
+             <div class="stat-label"><span data-t="dash.done_count">Consultas realizadas</span></div></div>
       </div>
       <div class="stat-card">
         <div class="stat-icon blue"><i class="fa fa-clock"></i></div>
         <div><div class="stat-value">${(data.proximas_consultas || []).length}</div>
-             <div class="stat-label">Próximas consultas</div></div>
+             <div class="stat-label"><span data-t="dash.upcoming">Próximas consultas</span></div></div>
       </div>
     </div>
 
     <div class="card">
       <div class="card-header">
-        <span class="card-title"><i class="fa fa-calendar" style="color:var(--primary)"></i> &nbsp;Minhas Próximas Consultas</span>
+        <span class="card-title"><i class="fa fa-calendar" style="color:var(--primary)"></i> &nbsp;<span data-t="dash.my_next">Minhas Próximas Consultas</span></span>
         <button class="btn btn-primary btn-sm" onclick="App.navigate('agendamento')">
           <i class="fa fa-plus"></i> Agendar
         </button>
@@ -87,12 +87,12 @@ function renderDashMedico(data) {
       <div class="stat-card">
         <div class="stat-icon orange"><i class="fa fa-calendar-day"></i></div>
         <div><div class="stat-value">${s.consultas_hoje || 0}</div>
-             <div class="stat-label">Consultas hoje</div></div>
+             <div class="stat-label"><span data-t="dash.today_count">Consultas hoje</span></div></div>
       </div>
       <div class="stat-card">
         <div class="stat-icon blue"><i class="fa fa-calendar"></i></div>
         <div><div class="stat-value">${s.consultas_mes || 0}</div>
-             <div class="stat-label">Consultas no mês</div></div>
+             <div class="stat-label"><span data-t="dash.month_count">Consultas no mês</span></div></div>
       </div>
       <div class="stat-card">
         <div class="stat-icon teal"><i class="fa fa-dollar-sign"></i></div>
@@ -109,12 +109,12 @@ function renderDashMedico(data) {
     <div class="dashboard-grid">
       <div class="card full">
         <div class="card-header">
-          <span class="card-title"><i class="fa fa-calendar-day" style="color:var(--primary)"></i> &nbsp;Minha Agenda de Hoje</span>
+          <span class="card-title"><i class="fa fa-calendar-day" style="color:var(--primary)"></i> &nbsp;<span data-t="dash.today">Minha <span data-t="dash.today">Agenda de Hoje</span></span></span>
         </div>
         <div class="card-body">`;
 
   if (!data.consultas_hoje?.length) {
-    html += emptyStateHTML('calendar-xmark','Sem consultas hoje','Aproveite para revisar prontuários ou atualizar registros.');
+    html += emptyStateHTML('calendar-xmark','<span data-t="dash.no_today">Sem consultas hoje</span>','Aproveite para revisar prontuários ou atualizar registros.');
   } else {
     data.consultas_hoje.forEach(c => {
       html += `<div class="agenda-day">
@@ -139,12 +139,12 @@ function renderDashMedico(data) {
 
       <div class="card full">
         <div class="card-header">
-          <span class="card-title"><i class="fa fa-clock" style="color:var(--primary)"></i> &nbsp;Próximas Consultas (7 dias)</span>
+          <span class="card-title"><i class="fa fa-clock" style="color:var(--primary)"></i> &nbsp;<span data-t="dash.next7">Próximas Consultas (7 dias)</span></span>
         </div>
         <div class="card-body">`;
 
   if (!data.proximas_consultas?.length) {
-    html += emptyStateHTML('calendar','Sem consultas nos próximos 7 dias','');
+    html += emptyStateHTML('calendar','<span data-t="dash.no_next7">Sem consultas nos próximos 7 dias</span>','');
   } else {
     data.proximas_consultas.forEach(c => {
       html += `<div style="padding:10px 0;border-bottom:1px solid var(--border)">
@@ -174,12 +174,12 @@ function renderDashRecepcao(data) {
       <div class="stat-card">
         <div class="stat-icon blue"><i class="fa fa-users"></i></div>
         <div><div class="stat-value">${s.total_pacientes || 0}</div>
-             <div class="stat-label">Pacientes cadastrados</div></div>
+             <div class="stat-label"><span data-t="dash.patients">Pacientes cadastrados</span></div></div>
       </div>
       <div class="stat-card">
         <div class="stat-icon green"><i class="fa fa-user-doctor"></i></div>
         <div><div class="stat-value">${s.total_medicos || 0}</div>
-             <div class="stat-label">Médicos ativos</div></div>
+             <div class="stat-label"><span data-t="dash.doctors">Médicos ativos</span></div></div>
       </div>
       <div class="stat-card">
         <div class="stat-icon orange"><i class="fa fa-calendar-day"></i></div>
@@ -262,19 +262,19 @@ function renderDashAdmin(data) {
       </div>
       <div class="stat-card">
         <div class="stat-icon orange"><i class="fa fa-calendar-day"></i></div>
-        <div><div class="stat-value">${s.consultas_hoje || 0}</div><div class="stat-label">Hoje</div></div>
+        <div><div class="stat-value">${s.consultas_hoje || 0}</div><div class="stat-label"><span data-t="dash.today_count">Hoje</span></div></div>
       </div>
       <div class="stat-card">
         <div class="stat-icon purple"><i class="fa fa-calendar"></i></div>
-        <div><div class="stat-value">${s.consultas_mes || 0}</div><div class="stat-label">Mês</div></div>
+        <div><div class="stat-value">${s.consultas_mes || 0}</div><div class="stat-label"><span data-t="dash.month_count">Mês</span></div></div>
       </div>
       <div class="stat-card">
         <div class="stat-icon teal"><i class="fa fa-dollar-sign"></i></div>
-        <div><div class="stat-value">${Utils.fmtMoney(s.receita_mes || 0)}</div><div class="stat-label">Receita mês</div></div>
+        <div><div class="stat-value">${Utils.fmtMoney(s.receita_mes || 0)}</div><div class="stat-label"><span data-t="dash.revenue">Receita mês</span></div></div>
       </div>
       <div class="stat-card">
         <div class="stat-icon red"><i class="fa fa-user-slash"></i></div>
-        <div><div class="stat-value">${s.taxa_absenteismo || 0}%</div><div class="stat-label">Absenteísmo</div></div>
+        <div><div class="stat-value">${s.taxa_absenteismo || 0}%</div><div class="stat-label"><span data-t="dash.absence">Absenteísmo</span></div></div>
       </div>
     </div>
 
@@ -306,12 +306,12 @@ function renderDashAdmin(data) {
   html += `</div></div>
 
       <div class="card">
-        <div class="card-header"><span class="card-title"><i class="fa fa-chart-bar" style="color:var(--primary)"></i> &nbsp;Por Especialidade</span></div>
+        <div class="card-header"><span class="card-title"><i class="fa fa-chart-bar" style="color:var(--primary)"></i> &nbsp;<span data-t="dash.by_specialty">Por Especialidade</span></span></div>
         <div class="card-body"><div class="bar-chart" id="bar-esp"></div></div>
       </div>
 
       <div class="card">
-        <div class="card-header"><span class="card-title"><i class="fa fa-clock" style="color:var(--primary)"></i> &nbsp;Próximas (7 dias)</span></div>
+        <div class="card-header"><span class="card-title"><i class="fa fa-clock" style="color:var(--primary)"></i> &nbsp;<span data-t="dash.next7_short">Próximas (7 dias)</span></span></div>
         <div class="card-body">`;
 
   if (!data.proximas_consultas?.length) {
@@ -329,7 +329,7 @@ function renderDashAdmin(data) {
   html += `</div></div>
 
       <div class="card full">
-        <div class="card-header"><span class="card-title"><i class="fa fa-chart-line" style="color:var(--primary)"></i> &nbsp;Receita Mensal</span></div>
+        <div class="card-header"><span class="card-title"><i class="fa fa-chart-line" style="color:var(--primary)"></i> &nbsp;<span data-t="dash.monthly_rev">Receita Mensal</span></span></div>
         <div class="card-body"><div class="bar-chart" id="bar-receita"></div></div>
       </div>
     </div>`;

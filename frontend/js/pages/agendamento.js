@@ -270,7 +270,7 @@ async function agStep4(c) {
         <i class="fa fa-user-plus"></i> Novo paciente
       </button>
     </div>
-    <div id="form-novo-pac" class="hidden" class="form-novo-pac-dark-fix">
+    <div id="form-novo-pac" class="hidden form-novo-pac-dark-fix">
       <div style="font-weight:700;margin-bottom:12px;color:var(--secondary)"><i class="fa fa-user-plus"></i> Cadastrar novo paciente</div>
       <div class="form-row">
         <div class="form-group"><label>Nome completo *</label><input id="np-nome" placeholder="Nome do paciente"></div>
