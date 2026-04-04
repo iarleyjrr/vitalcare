@@ -55,6 +55,12 @@ function renderDashPaciente(data) {
     html += emptyStateHTML('calendar', Lang.t('general.no_data'), '');
   } else {
     data.proximas_consultas.forEach(c => {
+      const podeCancelar = ['agendada','confirmada'].includes(c.status);
+      const cancelBtn = podeCancelar
+        ? `<button class="btn btn-danger btn-sm" style="margin-top:8px" onclick="cancelarConsultaDash(${c.id})">
+             <i class="fa fa-times-circle"></i> ${Lang.t('cons.cancel_btn')}
+           </button>`
+        : '';
       html += `<div class="agenda-day">
         <div class="agenda-time">${Utils.fmtTime(c.data_hora)}</div>
         <div class="agenda-card">
@@ -64,6 +70,7 @@ function renderDashPaciente(data) {
             &nbsp;·&nbsp; <i class="fa fa-stethoscope"></i> ${c.especialidade}
           </div>
           <div class="mt-4">${Utils.statusBadge(c.status)}</div>
+          ${cancelBtn}
         </div>
       </div>`;
     });
@@ -362,6 +369,18 @@ function renderDashAdmin(data) {
       <div class="bar-value" style="min-width:80px">${Utils.fmtMoney(r.total)}</div>
     </div>`;
   });
+}
+
+// ── Cancelar consulta direto do dashboard do paciente ────────────────────────
+async function cancelarConsultaDash(id) {
+  if (!confirm(Lang.t('cons.confirm_cancel_msg'))) return;
+  try {
+    await API.cancelarConsulta(id);
+    showToast(Lang.t('cons.cancelled_toast'), 'success');
+    App.navigate('dashboard');
+  } catch(e) {
+    showToast(e.message, 'error');
+  }
 }
 
 // ── Modal de detalhes da consulta (ícone olho) ───────────────────────────────
