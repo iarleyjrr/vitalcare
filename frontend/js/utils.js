@@ -27,20 +27,26 @@ const Utils = {
   },
   statusBadge(s) {
     const map = {
-      agendada:  ['badge-blue','calendar-check','Agendada'],
-      confirmada:['badge-purple','circle-check','Confirmada'],
-      realizada: ['badge-green','check-circle','Realizada'],
-      cancelada: ['badge-red','times-circle','Cancelada'],
-      falta:     ['badge-gray','user-slash','Falta'],
-      pago:      ['badge-green','check-circle','Pago'],
-      pendente:  ['badge-yellow','clock','Pendente'],
-      cancelado: ['badge-red','times-circle','Cancelado'],
+      agendada:  ['badge-blue','calendar-check', () => Lang.t('status.scheduled')],
+      confirmada:['badge-purple','circle-check',  () => Lang.t('status.confirmed')],
+      realizada: ['badge-green','check-circle',   () => Lang.t('status.done')],
+      cancelada: ['badge-red','times-circle',     () => Lang.t('status.cancelled')],
+      falta:     ['badge-gray','user-slash',      () => Lang.t('status.absent')],
+      pago:      ['badge-green','check-circle',   () => Lang.t('status.paid')],
+      pendente:  ['badge-yellow','clock',         () => Lang.t('status.pending')],
+      cancelado: ['badge-red','times-circle',     () => Lang.t('status.cancelled_fin')],
     };
-    const [cls, icon, label] = map[s] || ['badge-gray','circle','–'];
-    return `<span class="badge ${cls}"><i class="fa fa-${icon}"></i> ${label}</span>`;
+    const [cls, icon, labelFn] = map[s] || ['badge-gray','circle', () => '–'];
+    return `<span class="badge ${cls}"><i class="fa fa-${icon}"></i> ${labelFn()}</span>`;
   },
   perfilLabel(p) {
-    return {admin:'Administrador',medico:'Médico(a)',recepcionista:'Recepcionista',paciente:'Paciente'}[p] || p;
+    const map = {
+      admin: () => Lang.t('profile.admin'),
+      medico: () => Lang.t('profile.medico'),
+      recepcionista: () => Lang.t('profile.recepcionista'),
+      paciente: () => Lang.t('profile.paciente'),
+    };
+    return (map[p] ? map[p]() : p);
   },
   avatar(nome) {
     return nome ? nome.split(' ').map(n=>n[0]).slice(0,2).join('').toUpperCase() : '?';
@@ -73,8 +79,8 @@ function closeModal() {
 }
 
 // Loading helpers
-function loadingHTML(msg='Carregando...') {
-  return `<div class="loading"><div class="spinner"></div>${msg}</div>`;
+function loadingHTML(msg) {
+  return `<div class="loading"><div class="spinner"></div>${msg !== undefined ? msg : Lang.t('general.loading')}</div>`;
 }
 function emptyStateHTML(icon, title, desc='') {
   return `<div class="empty-state"><i class="fa fa-${icon}"></i><h3>${title}</h3><p>${desc}</p></div>`;

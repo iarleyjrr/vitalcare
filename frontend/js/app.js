@@ -9,38 +9,38 @@ const App = {
   // ── Menus por perfil (permissões revisadas) ───────────
   _menus: {
     admin: [
-      { group: 'Principal' },
+      { group: 'Principal', groupI18n: 'nav.group.main' },
       { id:'dashboard',   icon:'gauge-high',     label:'Dashboard',          i18n:'nav.dashboard' },
       { id:'agendamento', icon:'calendar-plus',  label:'Novo Agendamento',   i18n:'nav.new_appt' },
-      { group: 'Gestão Clínica' },
+      { group: 'Gestão Clínica', groupI18n: 'nav.group.clinic' },
       { id:'consultas',   icon:'calendar-check', label:'Consultas',          i18n:'nav.consults' },
       { id:'pacientes',   icon:'users',          label:'Pacientes',          i18n:'nav.patients' },
       { id:'medicos',     icon:'user-doctor',    label:'Médicos',            i18n:'nav.doctors' },
       { id:'prontuario',  icon:'file-medical',   label:'Prontuários',        i18n:'nav.records' },
-      { group: 'Financeiro & Relatórios' },
+      { group: 'Financeiro & Relatórios', groupI18n: 'nav.group.fin_reports' },
       { id:'financeiro',  icon:'dollar-sign',    label:'Financeiro',         i18n:'nav.financial' },
       { id:'relatorios',  icon:'chart-bar',      label:'Relatórios',         i18n:'nav.reports' },
     ],
     recepcionista: [
-      { group: 'Principal' },
+      { group: 'Principal', groupI18n: 'nav.group.main' },
       { id:'dashboard',   icon:'gauge-high',     label:'Dashboard',          i18n:'nav.dashboard' },
       { id:'agendamento', icon:'calendar-plus',  label:'Novo Agendamento',   i18n:'nav.new_appt' },
-      { group: 'Gestão' },
+      { group: 'Gestão', groupI18n: 'nav.group.management' },
       { id:'consultas',   icon:'calendar-check', label:'Consultas',          i18n:'nav.consults' },
       { id:'pacientes',   icon:'users',          label:'Pacientes',          i18n:'nav.patients' },
       { id:'medicos',     icon:'user-doctor',    label:'Médicos',            i18n:'nav.doctors' },
     ],
     medico: [
-      { group: 'Minha Agenda' },
+      { group: 'Minha Agenda', groupI18n: 'nav.group.my_schedule' },
       { id:'dashboard',   icon:'gauge-high',     label:'Meu Dashboard',      i18n:'nav.my_dashboard' },
       { id:'consultas',   icon:'calendar-check', label:'Minhas Consultas',   i18n:'nav.my_consults' },
       { id:'prontuario',  icon:'file-medical',   label:'Prontuários',        i18n:'nav.records' },
-      { group: 'Meus Dados' },
+      { group: 'Meus Dados', groupI18n: 'nav.group.my_data' },
       { id:'pacientes',   icon:'users',          label:'Meus Pacientes',     i18n:'nav.my_patients' },
       { id:'financeiro',  icon:'dollar-sign',    label:'Meu Faturamento',    i18n:'nav.my_billing' },
     ],
     paciente: [
-      { group: 'Minha Saúde' },
+      { group: 'Minha Saúde', groupI18n: 'nav.group.my_health' },
       { id:'dashboard',   icon:'gauge-high',     label:'Início',             i18n:'nav.start' },
       { id:'agendamento', icon:'calendar-plus',  label:'Agendar Consulta',   i18n:'nav.book' },
       { id:'consultas',   icon:'calendar-check', label:'Minhas Consultas',   i18n:'nav.my_consults' },
@@ -83,7 +83,7 @@ const App = {
       const senha = document.getElementById('senha-input').value.trim();
       const errEl = document.getElementById('login-error');
       errEl.textContent = '';
-      if (!login || !senha) { errEl.textContent = 'Preencha login e senha.'; return; }
+      if (!login || !senha) { errEl.textContent = Lang.t('login.fill'); return; }
       try {
         const res = await API.login(login, senha);
         localStorage.setItem('vc_token', res.token);
@@ -160,7 +160,6 @@ const App = {
     if (topbarAvatar) topbarAvatar.textContent = avatarTxt;
 
     App.buildMenu();
-    Lang.apply();
     App.navigate('dashboard');
   },
 
@@ -175,7 +174,8 @@ const App = {
       if (item.group) {
         const label = document.createElement('div');
         label.className   = 'nav-group-label';
-        label.textContent = item.group;
+        label.textContent = item.groupI18n ? Lang.t(item.groupI18n) : item.group;
+        if (item.groupI18n) label.dataset.t = item.groupI18n;
         nav.appendChild(label);
         return;
       }
@@ -225,7 +225,7 @@ const App = {
       container.innerHTML = `
         <div class="empty-state">
           <i class="fa fa-triangle-exclamation"></i>
-          <h3>Página não encontrada</h3>
+          <h3>${Lang.t('page.not_found')}</h3>
         </div>`;
     }
 

@@ -6,10 +6,10 @@ async function renderConsultas(container) {
 
   container.innerHTML = `
     <div class="page-header">
-      <div class="page-title"><i class="fa fa-calendar-check" style="color:var(--primary)"></i> &nbsp;Consultas</div>
+      <div class="page-title"><i class="fa fa-calendar-check" style="color:var(--primary)"></i> &nbsp;${Lang.t('page.consults')}</div>
       <div class="page-actions">
         <button class="btn btn-primary" onclick="App.navigate('agendamento')">
-          <i class="fa fa-plus"></i> Novo Agendamento
+          <i class="fa fa-plus"></i> ${Lang.t('nav.new_appt')}
         </button>
       </div>
     </div>
@@ -18,27 +18,27 @@ async function renderConsultas(container) {
       <div class="card-body">
         <div class="filters" id="consultas-filters">
           <div class="form-group">
-            <label>Data início</label>
+            <label>${Lang.t('cons.date_start')}</label>
             <input type="date" id="f-data-i" value="${inicioMes}">
           </div>
           <div class="form-group">
-            <label>Data fim</label>
+            <label>${Lang.t('cons.date_end')}</label>
             <input type="date" id="f-data-f" value="${hoje}">
           </div>
           <div class="form-group">
-            <label>Status</label>
+            <label>${Lang.t('cons.status_lbl')}</label>
             <select id="f-status">
-              <option value="">Todos</option>
-              <option value="agendada">Agendada</option>
-              <option value="confirmada">Confirmada</option>
-              <option value="realizada">Realizada</option>
-              <option value="cancelada">Cancelada</option>
-              <option value="falta">Falta</option>
+              <option value="">${Lang.t('cons.all')}</option>
+              <option value="agendada">${Lang.t('status.scheduled')}</option>
+              <option value="confirmada">${Lang.t('status.confirmed')}</option>
+              <option value="realizada">${Lang.t('status.done')}</option>
+              <option value="cancelada">${Lang.t('status.cancelled')}</option>
+              <option value="falta">${Lang.t('status.absent')}</option>
             </select>
           </div>
           <div class="form-group" style="align-self:flex-end">
             <button class="btn btn-primary" id="btn-filtrar">
-              <i class="fa fa-filter"></i> Filtrar
+              <i class="fa fa-filter"></i> ${Lang.t('cons.filter_btn')}
             </button>
           </div>
         </div>
@@ -52,9 +52,9 @@ async function renderConsultas(container) {
           <table>
             <thead>
               <tr>
-                <th>Data/Hora</th><th>Paciente</th><th>Médico</th>
-                <th>Especialidade</th><th>Status</th><th>Tipo</th>
-                <th>Valor</th><th>Ações</th>
+                <th>${Lang.t('cons.col_datetime')}</th><th>${Lang.t('cons.col_patient')}</th><th>${Lang.t('cons.col_doctor')}</th>
+                <th>${Lang.t('cons.col_specialty')}</th><th>${Lang.t('cons.col_status')}</th><th>${Lang.t('cons.col_type')}</th>
+                <th>${Lang.t('cons.col_value')}</th><th>${Lang.t('cons.col_actions')}</th>
               </tr>
             </thead>
             <tbody id="consultas-tbody"></tbody>
@@ -94,7 +94,7 @@ async function loadConsultas() {
 
     if (!data.length) {
       empty.className = '';
-      empty.innerHTML = emptyStateHTML('calendar-xmark','Nenhuma consulta encontrada','Ajuste os filtros ou agende uma nova consulta.');
+      empty.innerHTML = emptyStateHTML('calendar-xmark', Lang.t('cons.not_found'), Lang.t('cons.adj_filter'));
       return;
     }
 
@@ -106,16 +106,16 @@ async function loadConsultas() {
 
       // Ver/editar prontuário (médico ou admin)
       if (['medico','admin'].includes(user.perfil) && ['agendada','confirmada','realizada'].includes(c.status)) {
-        actions.push({ icon:'file-medical', title:'Prontuário', cls:'btn-secondary',
+        actions.push({ icon:'file-medical', title: Lang.t('cons.records_btn'), cls:'btn-secondary',
           fn: (c) => App.navigate('prontuario', { consulta: c }) });
       }
 
       // Confirmar consulta
       if (['admin','recepcionista'].includes(user.perfil) && c.status === 'agendada') {
-        actions.push({ icon:'circle-check', title:'Confirmar', cls:'btn-success btn-sm',
+        actions.push({ icon:'circle-check', title: Lang.t('cons.confirm_btn'), cls:'btn-success btn-sm',
           fn: async (c) => {
             await API.atualizarConsulta(c.id, { status:'confirmada' });
-            showToast('Consulta confirmada', 'success');
+            showToast(Lang.t('cons.confirmed_toast'), 'success');
             loadConsultas();
           }
         });
@@ -123,25 +123,25 @@ async function loadConsultas() {
 
       // Registrar falta
       if (['admin','recepcionista'].includes(user.perfil) && ['agendada','confirmada'].includes(c.status)) {
-        actions.push({ icon:'user-slash', title:'Registrar falta', cls:'btn-warning btn-sm',
+        actions.push({ icon:'user-slash', title: Lang.t('cons.absence_btn'), cls:'btn-warning btn-sm',
           fn: async (c) => {
-            if (!confirm('Registrar falta para esta consulta?')) return;
+            if (!confirm(Lang.t('cons.confirm_absence_msg'))) return;
             await API.atualizarConsulta(c.id, { status:'falta' });
-            showToast('Falta registrada', 'warning');
+            showToast(Lang.t('cons.absence_toast'), 'warning');
             loadConsultas();
           }
         });
       }
 
-      // Cancelar — admin, recepcionista e paciente (suas próprias)
+      // Cancelar
       const podeCancelar = ['admin','recepcionista'].includes(user.perfil) ||
         (user.perfil === 'paciente' && !['cancelada','realizada'].includes(c.status));
       if (podeCancelar && !['cancelada','realizada'].includes(c.status)) {
-        actions.push({ icon:'times-circle', title:'Cancelar', cls:'btn-danger btn-sm',
+        actions.push({ icon:'times-circle', title: Lang.t('cons.cancel_btn'), cls:'btn-danger btn-sm',
           fn: async (c) => {
-            if (!confirm('Deseja cancelar esta consulta?')) return;
+            if (!confirm(Lang.t('cons.confirm_cancel_msg'))) return;
             await API.cancelarConsulta(c.id);
-            showToast('Consulta cancelada', 'success');
+            showToast(Lang.t('cons.cancelled_toast'), 'success');
             loadConsultas();
           }
         });
@@ -152,6 +152,6 @@ async function loadConsultas() {
 
   } catch(e) {
     loading.classList.add('hidden');
-    showToast('Erro ao carregar consultas: ' + e.message, 'error');
+    showToast(e.message, 'error');
   }
 }

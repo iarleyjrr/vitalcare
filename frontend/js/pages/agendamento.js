@@ -17,9 +17,9 @@ const MEDICO_FOTOS = {
 
 function getSteps() {
   const p = App.getUser().perfil;
-  if (p === 'medico')   return ['Data/Hora','Paciente','Confirmação'];
-  if (p === 'paciente') return ['Especialidade','Médico','Data/Hora','Confirmação'];
-  return ['Especialidade','Médico','Data/Hora','Paciente','Confirmação'];
+  if (p === 'medico')   return [Lang.t('appt.datetime'), Lang.t('appt.patient'), Lang.t('appt.confirm')];
+  if (p === 'paciente') return [Lang.t('appt.specialty'), Lang.t('appt.doctor'), Lang.t('appt.datetime'), Lang.t('appt.confirm')];
+  return [Lang.t('appt.specialty'), Lang.t('appt.doctor'), Lang.t('appt.datetime'), Lang.t('appt.patient'), Lang.t('appt.confirm')];
 }
 
 async function renderAgendamento(container) {
@@ -28,12 +28,12 @@ async function renderAgendamento(container) {
 
   container.innerHTML = `
     <div class="page-header">
-      <div class="page-title"><i class="fa fa-calendar-plus" style="color:var(--primary)"></i> &nbsp;Novo Agendamento</div>
+      <div class="page-title"><i class="fa fa-calendar-plus" style="color:var(--primary)"></i> &nbsp;${Lang.t('nav.new_appt')}</div>
     </div>
     <div class="card">
       <div class="card-body">
         <div class="stepper" id="ag-stepper"></div>
-        <div id="ag-step-content">${loadingHTML('Preparando agendamento...')}</div>
+        <div id="ag-step-content">${loadingHTML(Lang.t('appt.preparing'))}</div>
       </div>
     </div>`;
 
@@ -97,7 +97,7 @@ async function renderAgStep() {
 
 // Paciente: auto-preenche e avança
 async function agAutoFillPaciente(c) {
-  c.innerHTML = loadingHTML('Identificando seus dados...');
+  c.innerHTML = loadingHTML(Lang.t('general.loading'));
   try {
     const perfil = await API.meuPerfil();
     _agData.paciente_id   = perfil.id;
@@ -111,7 +111,7 @@ async function agAutoFillPaciente(c) {
     _agData.paciente_nome = u.nome;
     _agData.convenio      = '';
     if (_agData.paciente_id) { _agStep++; renderAgStepper(); renderAgStep(); }
-    else c.innerHTML = `<div class="error-msg">Erro ao identificar paciente. Tente sair e entrar novamente.</div>`;
+    else c.innerHTML = `<div class="error-msg">${Lang.t('appt.error_identify')}</div>`;
   }
 }
 
@@ -120,7 +120,7 @@ async function agStep1(c) {
   try {
     const esps = await API.especialidades();
     const colors = ['blue','green','orange','purple','red','teal'];
-    let html = '<h3 style="margin-bottom:16px">Selecione a especialidade</h3><div class="doctor-cards">';
+    let html = `<h3 style="margin-bottom:16px">${Lang.t('appt.select_specialty')}</h3><div class="doctor-cards">`;
     esps.forEach((e, i) => {
       html += `<div class="card doctor-card" onclick="agSelectEsp(${e.id},'${e.nome.replace(/'/g,"\\'")}')">
         <div class="doctor-avatar" style="background:var(--${colors[i%colors.length]},var(--primary))">
@@ -144,9 +144,9 @@ function agSelectEsp(id, nome) {
 async function agStep2(c) {
   try {
     const medicos = await API.medicos(_agData.especialidade_id);
-    let html = `<h3 style="margin-bottom:16px">Selecione o médico</h3>
+    let html = `<h3 style="margin-bottom:16px">${Lang.t('appt.select_doctor')}</h3>
       <button class="btn btn-secondary btn-sm" onclick="_agStep--;renderAgStepper();renderAgStep()">
-        <i class="fa fa-arrow-left"></i> Voltar
+        <i class="fa fa-arrow-left"></i> ${Lang.t('btn.back')}
       </button>
       <div class="doctor-cards" style="margin-top:16px">`;
     medicos.forEach(m => {
@@ -179,16 +179,15 @@ async function agStep3(c) {
   const minDate = Utils.today();
   const maxDate = Utils.addDays(60);
 
-  // Garante que medico_id está definido (pode ter vindo do token no fallback)
   if (!_agData.medico_id) {
-    c.innerHTML = `<div class="error-msg">Erro ao carregar dados do médico. Atualize a página e tente novamente.</div>`;
+    c.innerHTML = `<div class="error-msg">${Lang.t('appt.error_doctor')}</div>`;
     return;
   }
 
   const voltarBtn = perfil !== 'medico'
     ? `<button class="btn btn-secondary btn-sm" style="margin-bottom:12px"
          onclick="_agStep--;renderAgStepper();renderAgStep()">
-         <i class='fa fa-arrow-left'></i> Voltar
+         <i class='fa fa-arrow-left'></i> ${Lang.t('btn.back')}
        </button>` : '';
 
   const medicoInfo = (perfil === 'medico' && _agData.medico_nome)
@@ -205,19 +204,19 @@ async function agStep3(c) {
        </div>` : '';
 
   c.innerHTML = `
-    <h3 style="margin-bottom:12px">Selecione a data e horário</h3>
+    <h3 style="margin-bottom:12px">${Lang.t('appt.select_datetime')}</h3>
     ${voltarBtn}
     ${medicoInfo}
     <div class="form-row" style="margin-top:12px;max-width:420px">
       <div class="form-group">
-        <label><i class="fa fa-calendar"></i> Data</label>
+        <label><i class="fa fa-calendar"></i> ${Lang.t('appt.date_lbl')}</label>
         <input type="date" id="ag-data" min="${minDate}" max="${maxDate}" value="${minDate}">
       </div>
       <div class="form-group">
-        <label><i class="fa fa-stethoscope"></i> Tipo</label>
+        <label><i class="fa fa-stethoscope"></i> ${Lang.t('appt.type_lbl')}</label>
         <select id="ag-tipo">
-          <option value="presencial">Presencial</option>
-          <option value="telemedicina">Telemedicina</option>
+          <option value="presencial">${Lang.t('general.presential')}</option>
+          <option value="telemedicina">${Lang.t('general.telemedicine')}</option>
         </select>
       </div>
     </div>
@@ -230,14 +229,14 @@ async function agStep3(c) {
 async function loadSlots(data) {
   const container = document.getElementById('ag-slots-container');
   if (!container || !_agData.medico_id) return;
-  container.innerHTML = loadingHTML('Buscando horários...');
+  container.innerHTML = loadingHTML(Lang.t('appt.loading_slots'));
   try {
     const {slots, duracao} = await API.disponibilidade(_agData.medico_id, data);
     if (!slots.length) {
-      container.innerHTML = `<div class="empty-state"><i class="fa fa-calendar-xmark"></i><h3>Sem horários neste dia</h3><p>Selecione outro dia da semana.</p></div>`;
+      container.innerHTML = `<div class="empty-state"><i class="fa fa-calendar-xmark"></i><h3>${Lang.t('appt.no_slots')}</h3></div>`;
       return;
     }
-    let html = `<div style="margin-bottom:8px;font-weight:600">Horários disponíveis (${duracao} min):</div><div class="slots-grid">`;
+    let html = `<div style="margin-bottom:8px;font-weight:600">${Lang.t('appt.slots_label')} (${duracao} min):</div><div class="slots-grid">`;
     slots.forEach(s => {
       html += `<div class="slot-btn${!s.disponivel?' unavailable':''}"
         data-dt="${s.datetime}" onclick="agSelectSlot('${s.datetime}','${s.hora}')">${s.hora}</div>`;
@@ -245,7 +244,7 @@ async function loadSlots(data) {
     html += '</div>';
     container.innerHTML = html;
   } catch(e) {
-    container.innerHTML = `<div class="error-msg">Erro ao buscar horários: ${e.message}</div>`;
+    container.innerHTML = `<div class="error-msg">${e.message}</div>`;
   }
 }
 
@@ -261,29 +260,29 @@ function agSelectSlot(datetime, hora) {
 // ── STEP 4: Paciente ──────────────────────────────────────────────────────────
 async function agStep4(c) {
   c.innerHTML = `
-    <h3 style="margin-bottom:12px">Selecione ou cadastre o paciente</h3>
+    <h3 style="margin-bottom:12px">${Lang.t('appt.select_patient')}</h3>
     <button class="btn btn-secondary btn-sm" onclick="_agStep--;renderAgStepper();renderAgStep()">
-      <i class="fa fa-arrow-left"></i> Voltar
+      <i class="fa fa-arrow-left"></i> ${Lang.t('btn.back')}
     </button>
     <div style="margin:14px 0">
       <button class="btn btn-success btn-sm" id="btn-novo-pac-ag">
-        <i class="fa fa-user-plus"></i> Novo paciente
+        <i class="fa fa-user-plus"></i> ${Lang.t('appt.new_patient')}
       </button>
     </div>
     <div id="form-novo-pac" class="hidden form-novo-pac-dark-fix">
-      <div style="font-weight:700;margin-bottom:12px;color:var(--secondary)"><i class="fa fa-user-plus"></i> Cadastrar novo paciente</div>
+      <div style="font-weight:700;margin-bottom:12px;color:var(--secondary)"><i class="fa fa-user-plus"></i> ${Lang.t('appt.register_patient')}</div>
       <div class="form-row">
-        <div class="form-group"><label>Nome completo *</label><input id="np-nome" placeholder="Nome do paciente"></div>
-        <div class="form-group"><label>CPF *</label><input id="np-cpf" placeholder="000.000.000-00"></div>
+        <div class="form-group"><label>${Lang.t('appt.full_name')}</label><input id="np-nome" placeholder="${Lang.t('appt.full_name')}"></div>
+        <div class="form-group"><label>${Lang.t('appt.cpf_lbl')}</label><input id="np-cpf" placeholder="000.000.000-00"></div>
       </div>
       <div class="form-row">
-        <div class="form-group"><label>E-mail *</label><input type="email" id="np-email" placeholder="email@exemplo.com"></div>
-        <div class="form-group"><label>Telefone</label><input id="np-tel" placeholder="(11) 99999-9999"></div>
+        <div class="form-group"><label>${Lang.t('appt.email_lbl')}</label><input type="email" id="np-email" placeholder="email@exemplo.com"></div>
+        <div class="form-group"><label>${Lang.t('appt.phone_lbl')}</label><input id="np-tel" placeholder="(11) 99999-9999"></div>
       </div>
       <div class="form-row">
-        <div class="form-group"><label>Convênio</label>
+        <div class="form-group"><label>${Lang.t('appt.insurance_lbl')}</label>
           <select id="np-conv">
-            <option value="">Particular</option>
+            <option value="">${Lang.t('general.private')}</option>
             <option value="Unimed">Unimed</option>
             <option value="SulAmérica">SulAmérica</option>
             <option value="Bradesco Saúde">Bradesco Saúde</option>
@@ -291,20 +290,20 @@ async function agStep4(c) {
             <option value="Hapvida">Hapvida</option>
           </select>
         </div>
-        <div class="form-group"><label>Nº Carteirinha</label><input id="np-cart" placeholder="Número"></div>
+        <div class="form-group"><label>${Lang.t('appt.card_lbl')}</label><input id="np-cart" placeholder="${Lang.t('appt.card_lbl')}"></div>
       </div>
       <div style="display:flex;gap:8px;margin-top:4px">
-        <button class="btn btn-success" id="btn-salvar-novo-pac"><i class="fa fa-save"></i> Cadastrar e selecionar</button>
-        <button class="btn btn-secondary" onclick="document.getElementById('form-novo-pac').classList.add('hidden')">Cancelar</button>
+        <button class="btn btn-success" id="btn-salvar-novo-pac"><i class="fa fa-save"></i> ${Lang.t('appt.save_select')}</button>
+        <button class="btn btn-secondary" onclick="document.getElementById('form-novo-pac').classList.add('hidden')">${Lang.t('btn.cancel')}</button>
       </div>
       <div id="np-error" class="error-msg"></div>
     </div>
-    <div style="font-weight:600;margin-bottom:8px;color:var(--text-muted)"><i class="fa fa-users"></i> Pacientes cadastrados</div>
+    <div style="font-weight:600;margin-bottom:8px;color:var(--text-muted)"><i class="fa fa-users"></i> ${Lang.t('appt.registered_patients')}</div>
     <div id="ag-pac-search-wrap"></div>
     <div class="card" style="margin-top:8px">
       <div class="table-wrapper">
         <table>
-          <thead><tr><th>Nome</th><th>CPF</th><th>Convênio</th><th></th></tr></thead>
+          <thead><tr><th>${Lang.t('pat.col_name')}</th><th>${Lang.t('appt.cpf_lbl')}</th><th>${Lang.t('appt.insurance_lbl')}</th><th></th></tr></thead>
           <tbody id="ag-pac-tbody"></tbody>
         </table>
       </div>
@@ -324,22 +323,22 @@ async function agStep4(c) {
       convenio: document.getElementById('np-conv').value,
       numero_carteira: document.getElementById('np-cart').value.trim(),
     };
-    if (!d.nome||!d.cpf||!d.email) { errEl.textContent='Preencha nome, CPF e e-mail.'; return; }
+    if (!d.nome||!d.cpf||!d.email) { errEl.textContent = Lang.t('general.required_fields'); return; }
     const btn = document.getElementById('btn-salvar-novo-pac');
-    btn.disabled=true; btn.innerHTML='<i class="fa fa-spinner fa-spin"></i> Cadastrando...';
+    btn.disabled=true; btn.innerHTML=`<i class="fa fa-spinner fa-spin"></i> ${Lang.t('general.loading')}`;
     try {
       const res = await API.criarPaciente(d);
       _agData.paciente_id = res.id; _agData.paciente_nome = d.nome; _agData.convenio = d.convenio||'';
-      showToast(`${d.nome} cadastrado!`,'success');
+      showToast(`${d.nome} ${Lang.t('pat.created_toast').toLowerCase()}!`,'success');
       _agStep++; renderAgStepper(); renderAgStep();
     } catch(e) {
       errEl.textContent = e.message;
-      btn.disabled=false; btn.innerHTML='<i class="fa fa-save"></i> Cadastrar e selecionar';
+      btn.disabled=false; btn.innerHTML=`<i class="fa fa-save"></i> ${Lang.t('appt.save_select')}`;
     }
   });
 
   const sw = document.getElementById('ag-pac-search-wrap');
-  sw.appendChild(Components.searchBar('Buscar paciente...', Utils.debounce(async q => {
+  sw.appendChild(Components.searchBar(Lang.t('pat.search_ph'), Utils.debounce(async q => {
     try { renderAgPacientes(await API.pacientes(q)); } catch(e) { showToast(e.message,'error'); }
   }, 300)));
   try { renderAgPacientes(await API.pacientes('')); }
@@ -354,7 +353,7 @@ function renderAgPacientes(list) {
   if (!tbody) return;
   tbody.innerHTML = '';
   if (!list.length) {
-    tbody.innerHTML = `<tr><td colspan="4" style="padding:16px;text-align:center;color:var(--text-muted)">Nenhum paciente encontrado</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="4" style="padding:16px;text-align:center;color:var(--text-muted)">${Lang.t('appt.no_patient')}</td></tr>`;
     return;
   }
   list.forEach(p => {
@@ -362,8 +361,8 @@ function renderAgPacientes(list) {
     tr.innerHTML = `
       <td><b>${p.nome}</b></td>
       <td class="text-muted">${p.cpf}</td>
-      <td>${p.convenio?`<span class="badge badge-blue">${p.convenio}</span>`:'Particular'}</td>
-      <td><button class="btn btn-sm btn-primary">Selecionar</button></td>`;
+      <td>${p.convenio?`<span class="badge badge-blue">${p.convenio}</span>`:Lang.t('general.private')}</td>
+      <td><button class="btn btn-sm btn-primary">${Lang.t('btn.select')}</button></td>`;
     tr.querySelector('button').addEventListener('click', () => {
       _agData.paciente_id = p.id; _agData.paciente_nome = p.nome; _agData.convenio = p.convenio||'';
       _agStep++; renderAgStepper(); renderAgStep();
@@ -377,10 +376,11 @@ async function agStep5(c) {
   const valores = {'Clínica Geral':150,'Pediatria':150,'Cardiologia':250,'Ortopedia':200,'Nutrição':180,'Psicologia':200};
   _agData.valor = valores[_agData.especialidade_nome] || 200;
   const foto = MEDICO_FOTOS[_agData.medico_id];
+  const tipoLabel = _agData.tipo === 'telemedicina' ? Lang.t('general.telemedicine') : Lang.t('general.presential');
   c.innerHTML = `
-    <h3 style="margin-bottom:12px"><i class="fa fa-check-circle" style="color:var(--secondary)"></i> Confirme o Agendamento</h3>
+    <h3 style="margin-bottom:12px"><i class="fa fa-check-circle" style="color:var(--secondary)"></i> ${Lang.t('appt.confirm_title')}</h3>
     <button class="btn btn-secondary btn-sm" onclick="_agStep--;renderAgStepper();renderAgStep()">
-      <i class="fa fa-arrow-left"></i> Voltar
+      <i class="fa fa-arrow-left"></i> ${Lang.t('btn.back')}
     </button>
     <div class="ag-confirm-card">
       <div class="ag-confirm-medico">
@@ -400,26 +400,26 @@ async function agStep5(c) {
         <div class="ag-confirm-row"><i class="fa fa-user"></i><span>${_agData.paciente_nome||'–'}</span></div>
         <div class="ag-confirm-row">
           <i class="fa fa-${_agData.tipo==='telemedicina'?'video':'hospital'}"></i>
-          <span>${_agData.tipo==='telemedicina'?'Telemedicina':'Presencial'}</span>
+          <span>${tipoLabel}</span>
         </div>
-        <div class="ag-confirm-row"><i class="fa fa-heart"></i><span>${_agData.convenio||'Particular'}</span></div>
+        <div class="ag-confirm-row"><i class="fa fa-heart"></i><span>${_agData.convenio || Lang.t('general.private')}</span></div>
         <div class="ag-confirm-row ag-confirm-valor">
           <i class="fa fa-dollar-sign"></i><span>${Utils.fmtMoney(_agData.valor)}</span>
         </div>
       </div>
     </div>
     <div class="form-group" style="margin-top:16px">
-      <label><i class="fa fa-notes-medical"></i> Observações (opcional)</label>
+      <label><i class="fa fa-notes-medical"></i> ${Lang.t('appt.obs')}</label>
       <textarea id="ag-obs" rows="2" placeholder="Ex: paciente em jejum, queixa principal..."></textarea>
     </div>
     <button class="btn btn-primary btn-block" id="ag-confirmar" style="margin-top:8px">
-      <i class="fa fa-calendar-check"></i> Confirmar Agendamento
+      <i class="fa fa-calendar-check"></i> ${Lang.t('appt.btn_confirm')}
     </button>
     <div id="ag-result"></div>`;
 
   document.getElementById('ag-confirmar').addEventListener('click', async () => {
     const btn = document.getElementById('ag-confirmar');
-    btn.disabled=true; btn.innerHTML='<i class="fa fa-spinner fa-spin"></i> Agendando...';
+    btn.disabled=true; btn.innerHTML=`<i class="fa fa-spinner fa-spin"></i> ${Lang.t('appt.scheduling')}`;
     try {
       await API.criarConsulta({
         id_paciente: _agData.paciente_id,
@@ -433,15 +433,15 @@ async function agStep5(c) {
       document.getElementById('ag-result').innerHTML = `
         <div style="text-align:center;padding:30px">
           <i class="fa fa-check-circle" style="font-size:56px;color:var(--secondary);display:block;margin-bottom:14px"></i>
-          <h2 style="color:var(--secondary)">Consulta agendada com sucesso!</h2>
+          <h2 style="color:var(--secondary)">${Lang.t('appt.success')}</h2>
           <button class="btn btn-primary" style="margin-top:16px" onclick="App.navigate('consultas')">
-            <i class="fa fa-list"></i> Ver consultas
+            <i class="fa fa-list"></i> ${Lang.t('btn.view_consults')}
           </button>
         </div>`;
       btn.remove();
-      showToast('Consulta agendada!','success');
+      showToast(Lang.t('appt.success'),'success');
     } catch(e) {
-      btn.disabled=false; btn.innerHTML='<i class="fa fa-calendar-check"></i> Confirmar Agendamento';
+      btn.disabled=false; btn.innerHTML=`<i class="fa fa-calendar-check"></i> ${Lang.t('appt.btn_confirm')}`;
       showToast(e.message,'error');
     }
   });

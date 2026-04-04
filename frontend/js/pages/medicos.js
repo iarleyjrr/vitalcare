@@ -13,9 +13,9 @@ async function renderMedicos(container) {
   const canEdit = user.perfil === 'admin';
   container.innerHTML = `
     <div class="page-header">
-      <div class="page-title"><i class="fa fa-user-doctor" style="color:var(--primary)"></i> &nbsp;Médicos</div>
+      <div class="page-title"><i class="fa fa-user-doctor" style="color:var(--primary)"></i> &nbsp;${Lang.t('doc.title')}</div>
       <div class="page-actions">
-        ${canEdit ? '<button class="btn btn-primary" id="btn-novo-medico"><i class="fa fa-plus"></i> Novo Médico</button>' : ''}
+        ${canEdit ? `<button class="btn btn-primary" id="btn-novo-medico"><i class="fa fa-plus"></i> ${Lang.t('doc.new')}</button>` : ''}
       </div>
     </div>
     <div id="medicos-content">${loadingHTML()}</div>`;
@@ -68,16 +68,15 @@ async function loadMedicos() {
             <div class="text-small mt-4 text-muted"><i class="fa fa-id-card"></i> ${m.crm}</div>
             ${m.bio ? `<div class="text-small mt-4" style="color:var(--text-muted)">${m.bio}</div>` : ''}
             <div class="mt-4" style="font-size:11px;color:var(--primary)">
-              <i class="fa fa-eye"></i> Ver detalhes
+              <i class="fa fa-eye"></i> ${Lang.t('doc.details')}
             </div>
           </div>`;
       });
       html += '</div></div>';
     });
 
-    c.innerHTML = html || emptyStateHTML('user-doctor', 'Nenhum médico cadastrado');
+    c.innerHTML = html || emptyStateHTML('user-doctor', Lang.t('doc.no_doctors'));
 
-    // Guarda os dados para usar no modal
     window._medicosData = medicos;
   } catch(e) {
     c.innerHTML = `<div class="error-msg">${e.message}</div>`;
@@ -109,28 +108,28 @@ async function abrirDetalhesMedico(mid) {
     <div style="display:grid;gap:12px;padding:0 4px">
       <div class="info-row-box">
         <i class="fa fa-id-card" style="color:var(--primary);width:18px"></i>
-        <div><div style="font-size:11px;color:var(--text-muted)">CRM</div><div style="font-weight:600">${m.crm}</div></div>
+        <div><div style="font-size:11px;color:var(--text-muted)">${Lang.t('doc.crm_lbl')}</div><div style="font-weight:600">${m.crm}</div></div>
       </div>
       <div class="info-row-box">
         <i class="fa fa-envelope" style="color:var(--primary);width:18px"></i>
-        <div><div style="font-size:11px;color:var(--text-muted)">E-mail</div><div style="font-weight:600">${m.email}</div></div>
+        <div><div style="font-size:11px;color:var(--text-muted)">${Lang.t('doc.email_lbl')}</div><div style="font-weight:600">${m.email}</div></div>
       </div>
       ${m.telefone ? `
       <div class="info-row-box">
         <i class="fa fa-phone" style="color:var(--primary);width:18px"></i>
-        <div><div style="font-size:11px;color:var(--text-muted)">Telefone</div><div style="font-weight:600">${m.telefone}</div></div>
+        <div><div style="font-size:11px;color:var(--text-muted)">${Lang.t('doc.phone_lbl')}</div><div style="font-weight:600">${m.telefone}</div></div>
       </div>` : ''}
       ${m.bio ? `
       <div style="padding:12px;background:var(--primary-lt);border-radius:8px;border-left:3px solid var(--primary)">
-        <div style="font-size:11px;color:var(--text-muted);margin-bottom:4px"><i class="fa fa-user"></i> Sobre</div>
+        <div style="font-size:11px;color:var(--text-muted);margin-bottom:4px"><i class="fa fa-user"></i> ${Lang.t('doc.about_lbl')}</div>
         <div style="font-size:13px">${m.bio}</div>
       </div>` : ''}
     </div>
 
     <div style="margin-top:20px;display:flex;gap:8px;justify-content:flex-end">
-      <button class="btn btn-secondary" onclick="closeModal()">Fechar</button>
+      <button class="btn btn-secondary" onclick="closeModal()">${Lang.t('btn.close')}</button>
       <button class="btn btn-primary" onclick="closeModal();App.navigate('agendamento')">
-        <i class="fa fa-calendar-plus"></i> Agendar consulta
+        <i class="fa fa-calendar-plus"></i> ${Lang.t('doc.schedule_btn')}
       </button>
     </div>`
   );
@@ -139,27 +138,27 @@ async function abrirDetalhesMedico(mid) {
 async function openFormMedico() {
   const esps = await API.especialidades();
   openModal(
-    `<h2 class="modal-title"><i class="fa fa-user-plus"></i> Novo Médico</h2>
+    `<h2 class="modal-title"><i class="fa fa-user-plus"></i> ${Lang.t('doc.new')}</h2>
     <div class="form-row">
-      <div class="form-group"><label>Nome completo *</label><input id="fm-nome" placeholder="Dr. Nome Sobrenome"></div>
-      <div class="form-group"><label>CRM *</label><input id="fm-crm" placeholder="CRM-SP 00000"></div>
+      <div class="form-group"><label>${Lang.t('doc.full_name')}</label><input id="fm-nome" placeholder="Dr. Nome Sobrenome"></div>
+      <div class="form-group"><label>${Lang.t('doc.crm_form')}</label><input id="fm-crm" placeholder="CRM-SP 00000"></div>
     </div>
     <div class="form-row">
-      <div class="form-group"><label>E-mail *</label><input type="email" id="fm-email" placeholder="email@vitalcare.med.br"></div>
-      <div class="form-group"><label>Telefone</label><input id="fm-tel" placeholder="(11) 99999-9999"></div>
+      <div class="form-group"><label>${Lang.t('doc.email_form')}</label><input type="email" id="fm-email" placeholder="email@vitalcare.med.br"></div>
+      <div class="form-group"><label>${Lang.t('doc.phone_form')}</label><input id="fm-tel" placeholder="(11) 99999-9999"></div>
     </div>
-    <div class="form-group"><label>Especialidade *</label>
+    <div class="form-group"><label>${Lang.t('doc.specialty_lbl')}</label>
       <select id="fm-esp">
-        <option value="">Selecione...</option>
+        <option value="">${Lang.t('doc.select_ph')}</option>
         ${esps.map(e => `<option value="${e.id}">${e.nome}</option>`).join('')}
       </select>
     </div>
-    <div class="form-group"><label>Biografia</label>
-      <textarea id="fm-bio" rows="2" placeholder="Breve descrição profissional..."></textarea>
+    <div class="form-group"><label>${Lang.t('doc.bio_lbl')}</label>
+      <textarea id="fm-bio" rows="2" placeholder="${Lang.t('doc.bio_lbl')}..."></textarea>
     </div>
     <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:16px">
-      <button class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
-      <button class="btn btn-primary" id="fm-salvar"><i class="fa fa-save"></i> Cadastrar</button>
+      <button class="btn btn-secondary" onclick="closeModal()">${Lang.t('btn.cancel')}</button>
+      <button class="btn btn-primary" id="fm-salvar"><i class="fa fa-save"></i> ${Lang.t('doc.register_btn')}</button>
     </div>`
   );
   document.getElementById('fm-salvar').addEventListener('click', async () => {
@@ -172,11 +171,11 @@ async function openFormMedico() {
       bio: document.getElementById('fm-bio').value.trim(),
     };
     if (!d.nome || !d.crm || !d.email || !d.id_especialidade) {
-      return showToast('Preencha os campos obrigatórios', 'warning');
+      return showToast(Lang.t('general.required_fields'), 'warning');
     }
     try {
       await API.criarMedico(d);
-      showToast('Médico cadastrado!', 'success');
+      showToast(Lang.t('doc.created_toast'), 'success');
       closeModal();
       await loadMedicos();
     } catch(e) { showToast(e.message, 'error'); }

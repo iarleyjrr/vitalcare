@@ -5,10 +5,11 @@ async function renderDashboard(container) {
       <div class="page-title"><i class="fa fa-gauge-high" style="color:var(--primary)"></i> &nbsp;Dashboard</div>
       <div id="dash-date" class="text-muted text-small"></div>
     </div>
-    <div id="dash-content">${loadingHTML('Carregando dashboard...')}</div>
+    <div id="dash-content">${loadingHTML(Lang.t('dash.loading'))}</div>
   `;
   document.getElementById('dash-date').textContent =
-    new Date().toLocaleDateString('pt-BR',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+    new Date().toLocaleDateString(Lang._lang === 'en' ? 'en-US' : 'pt-BR',
+      {weekday:'long',year:'numeric',month:'long',day:'numeric'});
 
   try {
     const data = await API.dashboard();
@@ -32,26 +33,26 @@ function renderDashPaciente(data) {
       <div class="stat-card">
         <div class="stat-icon green"><i class="fa fa-calendar-check"></i></div>
         <div><div class="stat-value">${s.total_consultas_realizadas || 0}</div>
-             <div class="stat-label"><span data-t="dash.done_count">Consultas realizadas</span></div></div>
+             <div class="stat-label"><span data-t="dash.done_count">${Lang.t('dash.done_count')}</span></div></div>
       </div>
       <div class="stat-card">
         <div class="stat-icon blue"><i class="fa fa-clock"></i></div>
         <div><div class="stat-value">${(data.proximas_consultas || []).length}</div>
-             <div class="stat-label"><span data-t="dash.upcoming">Próximas consultas</span></div></div>
+             <div class="stat-label"><span data-t="dash.upcoming">${Lang.t('dash.upcoming')}</span></div></div>
       </div>
     </div>
 
     <div class="card">
       <div class="card-header">
-        <span class="card-title"><i class="fa fa-calendar" style="color:var(--primary)"></i> &nbsp;<span data-t="dash.my_next">Minhas Próximas Consultas</span></span>
+        <span class="card-title"><i class="fa fa-calendar" style="color:var(--primary)"></i> &nbsp;<span data-t="dash.my_next">${Lang.t('dash.my_next')}</span></span>
         <button class="btn btn-primary btn-sm" onclick="App.navigate('agendamento')">
-          <i class="fa fa-plus"></i> Agendar
+          <i class="fa fa-plus"></i> ${Lang.t('btn.schedule')}
         </button>
       </div>
       <div class="card-body">`;
 
   if (!data.proximas_consultas?.length) {
-    html += emptyStateHTML('calendar','Nenhuma consulta agendada','Clique em Agendar para marcar uma consulta.');
+    html += emptyStateHTML('calendar', Lang.t('general.no_data'), '');
   } else {
     data.proximas_consultas.forEach(c => {
       html += `<div class="agenda-day">
@@ -78,43 +79,43 @@ function renderDashMedico(data) {
   let html = `
     <div style="margin-bottom:16px">
       <div style="font-size:18px;font-weight:700;color:var(--text)">
-        Bem-vindo(a), ${user.nome}
+        ${Lang.t('dash.welcome')} ${user.nome}
       </div>
-      <div class="text-muted text-small">Seus dados e agenda pessoal</div>
+      <div class="text-muted text-small">${Lang.t('dash.my_data_subtitle')}</div>
     </div>
 
     <div class="stats-grid">
       <div class="stat-card">
         <div class="stat-icon orange"><i class="fa fa-calendar-day"></i></div>
         <div><div class="stat-value">${s.consultas_hoje || 0}</div>
-             <div class="stat-label"><span data-t="dash.today_count">Consultas hoje</span></div></div>
+             <div class="stat-label"><span data-t="dash.today_count">${Lang.t('dash.today_count')}</span></div></div>
       </div>
       <div class="stat-card">
         <div class="stat-icon blue"><i class="fa fa-calendar"></i></div>
         <div><div class="stat-value">${s.consultas_mes || 0}</div>
-             <div class="stat-label"><span data-t="dash.month_count">Consultas no mês</span></div></div>
+             <div class="stat-label"><span data-t="dash.month_count">${Lang.t('dash.month_count')}</span></div></div>
       </div>
       <div class="stat-card">
         <div class="stat-icon teal"><i class="fa fa-dollar-sign"></i></div>
         <div><div class="stat-value">${Utils.fmtMoney(s.faturamento_mes || 0)}</div>
-             <div class="stat-label">Meu faturamento (mês)</div></div>
+             <div class="stat-label"><span data-t="dash.my_billing">${Lang.t('dash.my_billing')}</span></div></div>
       </div>
       <div class="stat-card">
         <div class="stat-icon red"><i class="fa fa-user-slash"></i></div>
         <div><div class="stat-value">${s.taxa_absenteismo || 0}%</div>
-             <div class="stat-label">Taxa de faltas (meus pacs.)</div></div>
+             <div class="stat-label"><span data-t="dash.absence_my">${Lang.t('dash.absence_my')}</span></div></div>
       </div>
     </div>
 
     <div class="dashboard-grid">
       <div class="card full">
         <div class="card-header">
-          <span class="card-title"><i class="fa fa-calendar-day" style="color:var(--primary)"></i> &nbsp;<span data-t="dash.today">Minha <span data-t="dash.today">Agenda de Hoje</span></span></span>
+          <span class="card-title"><i class="fa fa-calendar-day" style="color:var(--primary)"></i> &nbsp;<span data-t="dash.today">${Lang.t('dash.today')}</span></span>
         </div>
         <div class="card-body">`;
 
   if (!data.consultas_hoje?.length) {
-    html += emptyStateHTML('calendar-xmark','<span data-t="dash.no_today">Sem consultas hoje</span>','Aproveite para revisar prontuários ou atualizar registros.');
+    html += emptyStateHTML('calendar-xmark', Lang.t('dash.no_today_all'), '');
   } else {
     data.consultas_hoje.forEach(c => {
       html += `<div class="agenda-day">
@@ -127,7 +128,7 @@ function renderDashMedico(data) {
               <div class="mt-4">${Utils.statusBadge(c.status)}</div>
               ${c.observacoes ? `<div class="ag-obs-tag"><i class="fa fa-notes-medical"></i> ${c.observacoes}</div>` : ''}
             </div>
-            <button class="btn-ver-consulta" title="Ver detalhes" onclick="abrirDetalhesConsulta(${JSON.stringify(c).replace(/"/g,'&quot;')})">
+            <button class="btn-ver-consulta" title="${Lang.t('dash.consult_details')}" onclick="abrirDetalhesConsulta(${JSON.stringify(c).replace(/"/g,'&quot;')})">
               <i class="fa fa-eye"></i>
             </button>
           </div>
@@ -139,12 +140,12 @@ function renderDashMedico(data) {
 
       <div class="card full">
         <div class="card-header">
-          <span class="card-title"><i class="fa fa-clock" style="color:var(--primary)"></i> &nbsp;<span data-t="dash.next7">Próximas Consultas (7 dias)</span></span>
+          <span class="card-title"><i class="fa fa-clock" style="color:var(--primary)"></i> &nbsp;<span data-t="dash.next7">${Lang.t('dash.next7')}</span></span>
         </div>
         <div class="card-body">`;
 
   if (!data.proximas_consultas?.length) {
-    html += emptyStateHTML('calendar','<span data-t="dash.no_next7">Sem consultas nos próximos 7 dias</span>','');
+    html += emptyStateHTML('calendar', Lang.t('dash.no_next7_all'), '');
   } else {
     data.proximas_consultas.forEach(c => {
       html += `<div style="padding:10px 0;border-bottom:1px solid var(--border)">
@@ -155,7 +156,7 @@ function renderDashMedico(data) {
             <div class="mt-4">${Utils.statusBadge(c.status)}</div>
             ${c.observacoes ? `<div class="ag-obs-tag"><i class="fa fa-notes-medical"></i> ${c.observacoes}</div>` : ''}
           </div>
-          <button class="btn-ver-consulta" title="Ver detalhes" onclick="abrirDetalhesConsulta(${JSON.stringify(c).replace(/"/g,'&quot;')})">
+          <button class="btn-ver-consulta" title="${Lang.t('dash.consult_details')}" onclick="abrirDetalhesConsulta(${JSON.stringify(c).replace(/"/g,'&quot;')})">
             <i class="fa fa-eye"></i>
           </button>
         </div>
@@ -174,37 +175,37 @@ function renderDashRecepcao(data) {
       <div class="stat-card">
         <div class="stat-icon blue"><i class="fa fa-users"></i></div>
         <div><div class="stat-value">${s.total_pacientes || 0}</div>
-             <div class="stat-label"><span data-t="dash.patients">Pacientes cadastrados</span></div></div>
+             <div class="stat-label"><span data-t="dash.patients">${Lang.t('dash.patients')}</span></div></div>
       </div>
       <div class="stat-card">
         <div class="stat-icon green"><i class="fa fa-user-doctor"></i></div>
         <div><div class="stat-value">${s.total_medicos || 0}</div>
-             <div class="stat-label"><span data-t="dash.doctors">Médicos ativos</span></div></div>
+             <div class="stat-label"><span data-t="dash.doctors">${Lang.t('dash.doctors')}</span></div></div>
       </div>
       <div class="stat-card">
         <div class="stat-icon orange"><i class="fa fa-calendar-day"></i></div>
         <div><div class="stat-value">${s.consultas_hoje || 0}</div>
-             <div class="stat-label">Consultas hoje</div></div>
+             <div class="stat-label"><span data-t="dash.today_count">${Lang.t('dash.today_count')}</span></div></div>
       </div>
       <div class="stat-card">
         <div class="stat-icon purple"><i class="fa fa-calendar"></i></div>
         <div><div class="stat-value">${s.consultas_mes || 0}</div>
-             <div class="stat-label">Consultas no mês</div></div>
+             <div class="stat-label"><span data-t="dash.month_count">${Lang.t('dash.month_count')}</span></div></div>
       </div>
     </div>
 
     <div class="dashboard-grid">
       <div class="card full">
         <div class="card-header">
-          <span class="card-title"><i class="fa fa-calendar-day" style="color:var(--primary)"></i> &nbsp;Agenda de Hoje</span>
+          <span class="card-title"><i class="fa fa-calendar-day" style="color:var(--primary)"></i> &nbsp;<span data-t="dash.today">${Lang.t('dash.today')}</span></span>
           <button class="btn btn-primary btn-sm" onclick="App.navigate('agendamento')">
-            <i class="fa fa-plus"></i> Novo Agendamento
+            <i class="fa fa-plus"></i> ${Lang.t('nav.new_appt')}
           </button>
         </div>
         <div class="card-body">`;
 
   if (!data.consultas_hoje?.length) {
-    html += emptyStateHTML('calendar-xmark','Nenhuma consulta hoje','');
+    html += emptyStateHTML('calendar-xmark', Lang.t('dash.no_today_all'), '');
   } else {
     data.consultas_hoje.forEach(c => {
       html += `<div class="agenda-day">
@@ -225,12 +226,12 @@ function renderDashRecepcao(data) {
 
       <div class="card full">
         <div class="card-header">
-          <span class="card-title"><i class="fa fa-clock" style="color:var(--primary)"></i> &nbsp;Próximas Consultas (7 dias)</span>
+          <span class="card-title"><i class="fa fa-clock" style="color:var(--primary)"></i> &nbsp;<span data-t="dash.next7">${Lang.t('dash.next7')}</span></span>
         </div>
         <div class="card-body">`;
 
   if (!data.proximas_consultas?.length) {
-    html += emptyStateHTML('calendar','Sem consultas agendadas nos próximos 7 dias','');
+    html += emptyStateHTML('calendar', Lang.t('dash.no_next7_all'), '');
   } else {
     data.proximas_consultas.forEach(c => {
       html += `<div style="padding:10px 0;border-bottom:1px solid var(--border)">
@@ -254,39 +255,39 @@ function renderDashAdmin(data) {
     <div class="stats-grid">
       <div class="stat-card">
         <div class="stat-icon blue"><i class="fa fa-users"></i></div>
-        <div><div class="stat-value">${s.total_pacientes || 0}</div><div class="stat-label">Pacientes</div></div>
+        <div><div class="stat-value">${s.total_pacientes || 0}</div><div class="stat-label"><span data-t="dash.patients_stat">${Lang.t('dash.patients_stat')}</span></div></div>
       </div>
       <div class="stat-card">
         <div class="stat-icon green"><i class="fa fa-user-doctor"></i></div>
-        <div><div class="stat-value">${s.total_medicos || 0}</div><div class="stat-label">Médicos</div></div>
+        <div><div class="stat-value">${s.total_medicos || 0}</div><div class="stat-label"><span data-t="dash.doctors_stat">${Lang.t('dash.doctors_stat')}</span></div></div>
       </div>
       <div class="stat-card">
         <div class="stat-icon orange"><i class="fa fa-calendar-day"></i></div>
-        <div><div class="stat-value">${s.consultas_hoje || 0}</div><div class="stat-label"><span data-t="dash.today_count">Hoje</span></div></div>
+        <div><div class="stat-value">${s.consultas_hoje || 0}</div><div class="stat-label"><span data-t="dash.today_count">${Lang.t('dash.today_count')}</span></div></div>
       </div>
       <div class="stat-card">
         <div class="stat-icon purple"><i class="fa fa-calendar"></i></div>
-        <div><div class="stat-value">${s.consultas_mes || 0}</div><div class="stat-label"><span data-t="dash.month_count">Mês</span></div></div>
+        <div><div class="stat-value">${s.consultas_mes || 0}</div><div class="stat-label"><span data-t="dash.month_count">${Lang.t('dash.month_count')}</span></div></div>
       </div>
       <div class="stat-card">
         <div class="stat-icon teal"><i class="fa fa-dollar-sign"></i></div>
-        <div><div class="stat-value">${Utils.fmtMoney(s.receita_mes || 0)}</div><div class="stat-label"><span data-t="dash.revenue">Receita mês</span></div></div>
+        <div><div class="stat-value">${Utils.fmtMoney(s.receita_mes || 0)}</div><div class="stat-label"><span data-t="dash.revenue">${Lang.t('dash.revenue')}</span></div></div>
       </div>
       <div class="stat-card">
         <div class="stat-icon red"><i class="fa fa-user-slash"></i></div>
-        <div><div class="stat-value">${s.taxa_absenteismo || 0}%</div><div class="stat-label"><span data-t="dash.absence">Absenteísmo</span></div></div>
+        <div><div class="stat-value">${s.taxa_absenteismo || 0}%</div><div class="stat-label"><span data-t="dash.absence">${Lang.t('dash.absence')}</span></div></div>
       </div>
     </div>
 
     <div class="dashboard-grid">
       <div class="card full">
         <div class="card-header">
-          <span class="card-title"><i class="fa fa-calendar-day" style="color:var(--primary)"></i> &nbsp;Agenda de Hoje</span>
+          <span class="card-title"><i class="fa fa-calendar-day" style="color:var(--primary)"></i> &nbsp;<span data-t="dash.today">${Lang.t('dash.today')}</span></span>
         </div>
         <div class="card-body">`;
 
   if (!data.consultas_hoje?.length) {
-    html += emptyStateHTML('calendar-xmark','Nenhuma consulta hoje','');
+    html += emptyStateHTML('calendar-xmark', Lang.t('dash.no_today_all'), '');
   } else {
     data.consultas_hoje.forEach(c => {
       html += `<div class="agenda-day">
@@ -306,16 +307,16 @@ function renderDashAdmin(data) {
   html += `</div></div>
 
       <div class="card">
-        <div class="card-header"><span class="card-title"><i class="fa fa-chart-bar" style="color:var(--primary)"></i> &nbsp;<span data-t="dash.by_specialty">Por Especialidade</span></span></div>
+        <div class="card-header"><span class="card-title"><i class="fa fa-chart-bar" style="color:var(--primary)"></i> &nbsp;<span data-t="dash.by_specialty">${Lang.t('dash.by_specialty')}</span></span></div>
         <div class="card-body"><div class="bar-chart" id="bar-esp"></div></div>
       </div>
 
       <div class="card">
-        <div class="card-header"><span class="card-title"><i class="fa fa-clock" style="color:var(--primary)"></i> &nbsp;<span data-t="dash.next7_short">Próximas (7 dias)</span></span></div>
+        <div class="card-header"><span class="card-title"><i class="fa fa-clock" style="color:var(--primary)"></i> &nbsp;<span data-t="dash.next7_short">${Lang.t('dash.next7_short')}</span></span></div>
         <div class="card-body">`;
 
   if (!data.proximas_consultas?.length) {
-    html += emptyStateHTML('calendar','Sem consultas agendadas','');
+    html += emptyStateHTML('calendar', Lang.t('dash.no_appt'), '');
   } else {
     data.proximas_consultas.forEach(c => {
       html += `<div style="padding:10px 0;border-bottom:1px solid var(--border)">
@@ -329,7 +330,7 @@ function renderDashAdmin(data) {
   html += `</div></div>
 
       <div class="card full">
-        <div class="card-header"><span class="card-title"><i class="fa fa-chart-line" style="color:var(--primary)"></i> &nbsp;<span data-t="dash.monthly_rev">Receita Mensal</span></span></div>
+        <div class="card-header"><span class="card-title"><i class="fa fa-chart-line" style="color:var(--primary)"></i> &nbsp;<span data-t="dash.monthly_rev">${Lang.t('dash.monthly_rev')}</span></span></div>
         <div class="card-body"><div class="bar-chart" id="bar-receita"></div></div>
       </div>
     </div>`;
@@ -353,7 +354,8 @@ function renderDashAdmin(data) {
   const barRec = document.getElementById('bar-receita');
   receitaData.forEach(r => {
     const [y, m] = r.mes.split('-');
-    const nomeMes = new Date(+y, +m-1, 1).toLocaleDateString('pt-BR', {month:'short', year:'2-digit'});
+    const locale = Lang._lang === 'en' ? 'en-US' : 'pt-BR';
+    const nomeMes = new Date(+y, +m-1, 1).toLocaleDateString(locale, {month:'short', year:'2-digit'});
     barRec.innerHTML += `<div class="bar-row">
       <div class="bar-label">${nomeMes}</div>
       <div class="bar-track"><div class="bar-fill" style="width:${(r.total/maxRec*100).toFixed(1)}%;background:var(--secondary)"></div></div>
@@ -364,29 +366,33 @@ function renderDashAdmin(data) {
 
 // ── Modal de detalhes da consulta (ícone olho) ───────────────────────────────
 function abrirDetalhesConsulta(consulta) {
+  const tipoLabel = consulta.tipo === 'telemedicina'
+    ? Lang.t('general.telemedicine')
+    : Lang.t('general.presential');
+
   const obs = consulta.observacoes
     ? `<div class="obs-box">
-         <b><i class="fa fa-notes-medical" style="color:#b45309"></i> Observações:</b>
+         <b><i class="fa fa-notes-medical" style="color:#b45309"></i> ${Lang.t('dash.detail_obs')}</b>
          <p class="obs-box-text" style="margin-top:6px">${consulta.observacoes}</p>
        </div>`
-    : '<p class="text-muted text-small" style="margin-top:4px">Nenhuma observação registrada.</p>';
+    : `<p class="text-muted text-small" style="margin-top:4px">${Lang.t('dash.no_obs')}</p>`;
 
   const tipoIcon = consulta.tipo === 'telemedicina'
-    ? '<span class="badge badge-purple"><i class="fa fa-video"></i> Telemedicina</span>'
-    : '<span class="badge badge-gray"><i class="fa fa-hospital"></i> Presencial</span>';
+    ? `<span class="badge badge-purple"><i class="fa fa-video"></i> ${Lang.t('general.telemedicine')}</span>`
+    : `<span class="badge badge-gray"><i class="fa fa-hospital"></i> ${Lang.t('general.presential')}</span>`;
 
   openModal(
-    '<h2 class="modal-title"><i class="fa fa-calendar-check"></i> Detalhes da Consulta</h2>' +
+    `<h2 class="modal-title"><i class="fa fa-calendar-check"></i> ${Lang.t('dash.consult_details')}</h2>` +
     '<div style="display:grid;gap:14px">' +
-      '<div><b><i class="fa fa-user" style="color:var(--primary)"></i> Paciente:</b> ' + (consulta.paciente || consulta.paciente_nome || '–') + '</div>' +
-      '<div><b><i class="fa fa-stethoscope" style="color:var(--primary)"></i> Especialidade:</b> ' + (consulta.especialidade || '–') + '</div>' +
-      '<div><b><i class="fa fa-calendar" style="color:var(--primary)"></i> Data:</b> ' + Utils.fmtDateBR(consulta.data_hora) + ' às ' + Utils.fmtTime(consulta.data_hora) + '</div>' +
-      '<div><b><i class="fa fa-clinic-medical" style="color:var(--primary)"></i> Tipo:</b> ' + tipoIcon + '</div>' +
-      '<div><b><i class="fa fa-circle-check" style="color:var(--primary)"></i> Status:</b> ' + Utils.statusBadge(consulta.status) + '</div>' +
+      `<div><b><i class="fa fa-user" style="color:var(--primary)"></i> ${Lang.t('dash.detail_patient')}</b> ` + (consulta.paciente || consulta.paciente_nome || '–') + '</div>' +
+      `<div><b><i class="fa fa-stethoscope" style="color:var(--primary)"></i> ${Lang.t('dash.detail_specialty')}</b> ` + (consulta.especialidade || '–') + '</div>' +
+      `<div><b><i class="fa fa-calendar" style="color:var(--primary)"></i> ${Lang.t('dash.detail_date')}</b> ` + Utils.fmtDateBR(consulta.data_hora) + ' ' + Utils.fmtTime(consulta.data_hora) + '</div>' +
+      `<div><b><i class="fa fa-clinic-medical" style="color:var(--primary)"></i> ${Lang.t('dash.detail_type')}</b> ` + tipoIcon + '</div>' +
+      `<div><b><i class="fa fa-circle-check" style="color:var(--primary)"></i> ${Lang.t('dash.detail_status')}</b> ` + Utils.statusBadge(consulta.status) + '</div>' +
       obs +
     '</div>' +
-    '<div style="margin-top:20px;display:flex;gap:8px;justify-content:flex-end">' +
-      '<button class="btn btn-secondary" onclick="closeModal()">Fechar</button>' +
+    `<div style="margin-top:20px;display:flex;gap:8px;justify-content:flex-end">` +
+      `<button class="btn btn-secondary" onclick="closeModal()">${Lang.t('btn.close')}</button>` +
     '</div>'
   );
 }

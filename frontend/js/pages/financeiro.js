@@ -2,26 +2,28 @@
 async function renderFinanceiro(container) {
   const hoje = Utils.today();
   const inicioMes = hoje.substring(0,7) + '-01';
+  const user = App.getUser();
+  const title = user.perfil === 'medico' ? Lang.t('fin.my_title') : Lang.t('fin.title');
 
   container.innerHTML = `
     <div class="page-header">
-      <div class="page-title"><i class="fa fa-dollar-sign" style="color:var(--primary)"></i> &nbsp;Financeiro</div>
+      <div class="page-title"><i class="fa fa-dollar-sign" style="color:var(--primary)"></i> &nbsp;${title}</div>
     </div>
 
     <div class="card" style="margin-bottom:20px">
       <div class="card-body">
         <div class="filters">
           <div class="form-group">
-            <label>Data início</label>
+            <label>${Lang.t('fin.date_start')}</label>
             <input type="date" id="fin-di" value="${inicioMes}">
           </div>
           <div class="form-group">
-            <label>Data fim</label>
+            <label>${Lang.t('fin.date_end')}</label>
             <input type="date" id="fin-df" value="${hoje}">
           </div>
           <div class="form-group" style="align-self:flex-end">
             <button class="btn btn-primary" id="btn-fin-filtrar">
-              <i class="fa fa-filter"></i> Filtrar
+              <i class="fa fa-filter"></i> ${Lang.t('fin.filter_btn')}
             </button>
           </div>
         </div>
@@ -32,7 +34,7 @@ async function renderFinanceiro(container) {
 
     <div class="card">
       <div class="card-header">
-        <span class="card-title"><i class="fa fa-list"></i> Faturas</span>
+        <span class="card-title"><i class="fa fa-list"></i> ${Lang.t('fin.invoices')}</span>
       </div>
       <div class="card-body">
         <div id="fin-loading">${loadingHTML()}</div>
@@ -40,8 +42,8 @@ async function renderFinanceiro(container) {
           <table>
             <thead>
               <tr>
-                <th>Data</th><th>Paciente</th><th>Especialidade</th>
-                <th>Consulta</th><th>Valor</th><th>Status</th><th>Pagamento</th><th>Ações</th>
+                <th>${Lang.t('fin.col_date')}</th><th>${Lang.t('fin.patient')}</th><th>${Lang.t('fin.specialty')}</th>
+                <th>${Lang.t('fin.col_consult')}</th><th>${Lang.t('fin.value')}</th><th>${Lang.t('fin.status')}</th><th>${Lang.t('fin.payment')}</th><th>${Lang.t('fin.actions')}</th>
               </tr>
             </thead>
             <tbody id="fin-tbody"></tbody>
@@ -81,25 +83,25 @@ async function loadFinanceiro() {
     resumoCards.innerHTML = `
       <div class="stat-card">
         <div class="stat-icon teal"><i class="fa fa-check-circle"></i></div>
-        <div><div class="stat-value">${Utils.fmtMoney(resumo.receita)}</div><div class="stat-label">Receita recebida</div></div>
+        <div><div class="stat-value">${Utils.fmtMoney(resumo.receita)}</div><div class="stat-label">${Lang.t('fin.received')}</div></div>
       </div>
       <div class="stat-card">
         <div class="stat-icon orange"><i class="fa fa-clock"></i></div>
-        <div><div class="stat-value">${Utils.fmtMoney(resumo.pendente)}</div><div class="stat-label">A receber</div></div>
+        <div><div class="stat-value">${Utils.fmtMoney(resumo.pendente)}</div><div class="stat-label">${Lang.t('fin.pending_stat')}</div></div>
       </div>
       <div class="stat-card">
         <div class="stat-icon red"><i class="fa fa-times-circle"></i></div>
-        <div><div class="stat-value">${Utils.fmtMoney(resumo.cancelado)}</div><div class="stat-label">Cancelado</div></div>
+        <div><div class="stat-value">${Utils.fmtMoney(resumo.cancelado)}</div><div class="stat-label">${Lang.t('fin.cancelled_stat')}</div></div>
       </div>
       <div class="stat-card">
         <div class="stat-icon blue"><i class="fa fa-file-invoice"></i></div>
-        <div><div class="stat-value">${resumo.total_faturas}</div><div class="stat-label">Total de faturas</div></div>
+        <div><div class="stat-value">${resumo.total_faturas}</div><div class="stat-label">${Lang.t('fin.total_inv')}</div></div>
       </div>
     `;
 
     if (!faturas.length) {
       empty.className = '';
-      empty.innerHTML = emptyStateHTML('file-invoice','Nenhuma fatura encontrada','Ajuste o período de busca.');
+      empty.innerHTML = emptyStateHTML('file-invoice', Lang.t('fin.not_found'), Lang.t('fin.adj_period'));
       return;
     }
 
@@ -121,7 +123,7 @@ async function loadFinanceiro() {
       if (f.status === 'pendente') {
         const btn = document.createElement('button');
         btn.className = 'btn btn-sm btn-success';
-        btn.innerHTML = '<i class="fa fa-money-bill"></i> Registrar pagamento';
+        btn.innerHTML = `<i class="fa fa-money-bill"></i> ${Lang.t('fin.pay')}`;
         btn.addEventListener('click', () => openPagamento(f));
         actCell.appendChild(btn);
       }
@@ -130,32 +132,32 @@ async function loadFinanceiro() {
 
   } catch(e) {
     loading.classList.add('hidden');
-    showToast('Erro ao carregar financeiro: ' + e.message, 'error');
+    showToast(e.message, 'error');
   }
 }
 
 function openPagamento(fatura) {
   openModal(`
-    <h2 class="modal-title"><i class="fa fa-money-bill"></i> Registrar Pagamento</h2>
+    <h2 class="modal-title"><i class="fa fa-money-bill"></i> ${Lang.t('fin.reg_payment_title')}</h2>
     <div class="resumo-fin-box">
-      <div><b>Paciente:</b> ${fatura.paciente_nome}</div>
-      <div><b>Valor:</b> <span style="font-size:20px;font-weight:800;color:var(--secondary)">${Utils.fmtMoney(fatura.valor)}</span></div>
+      <div><b>${Lang.t('fin.patient_lbl')}</b> ${fatura.paciente_nome}</div>
+      <div><b>${Lang.t('fin.value_lbl')}</b> <span style="font-size:20px;font-weight:800;color:var(--secondary)">${Utils.fmtMoney(fatura.valor)}</span></div>
     </div>
     <div class="form-group">
-      <label><i class="fa fa-credit-card"></i> Forma de pagamento</label>
+      <label><i class="fa fa-credit-card"></i> ${Lang.t('fin.payment_method')}</label>
       <select id="pay-forma">
-        <option value="dinheiro">Dinheiro</option>
-        <option value="cartão_débito">Cartão de Débito</option>
-        <option value="cartão_crédito">Cartão de Crédito</option>
-        <option value="pix">PIX</option>
-        <option value="convênio">Convênio</option>
-        <option value="transferência">Transferência Bancária</option>
+        <option value="dinheiro">${Lang.t('fin.cash')}</option>
+        <option value="cartão_débito">${Lang.t('fin.debit')}</option>
+        <option value="cartão_crédito">${Lang.t('fin.credit')}</option>
+        <option value="pix">${Lang.t('fin.pix')}</option>
+        <option value="convênio">${Lang.t('fin.conv')}</option>
+        <option value="transferência">${Lang.t('fin.transfer')}</option>
       </select>
     </div>
     <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:16px">
-      <button class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
+      <button class="btn btn-secondary" onclick="closeModal()">${Lang.t('btn.cancel')}</button>
       <button class="btn btn-success" id="btn-confirmar-pag">
-        <i class="fa fa-check"></i> Confirmar Pagamento
+        <i class="fa fa-check"></i> ${Lang.t('fin.confirm_payment')}
       </button>
     </div>
   `);
@@ -164,7 +166,7 @@ function openPagamento(fatura) {
     const forma = document.getElementById('pay-forma').value;
     try {
       await API.pagarFatura(fatura.id, forma);
-      showToast('Pagamento registrado com sucesso!', 'success');
+      showToast(Lang.t('fin.paid_toast'), 'success');
       closeModal();
       await loadFinanceiro();
     } catch(e) { showToast(e.message, 'error'); }
