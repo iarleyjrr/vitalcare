@@ -299,7 +299,7 @@ tbody tr:last-child { border-bottom: none; }
 /* Search */
 .search-bar {
   display: flex; gap: 10px; align-items: center;
-  margin-bottom: 16px; background: #fff;
+  margin-bottom: 16px; background: var(--card-bg);
   border: 1.5px solid var(--border); border-radius: 10px; padding: 8px 13px;
 }
 .search-bar i { color: var(--text-muted); flex-shrink: 0; }
@@ -325,7 +325,7 @@ tbody tr:last-child { border-bottom: none; }
 .slot-btn {
   padding: 11px 6px; border: 1.5px solid var(--border);
   border-radius: 8px; text-align: center; cursor: pointer;
-  font-size: 13px; font-weight: 600; background: #fff; color: var(--text);
+  font-size: 13px; font-weight: 600; background: var(--card-bg); color: var(--text);
   transition: all var(--transition); min-height: 44px;
   -webkit-tap-highlight-color: transparent;
 }
@@ -479,10 +479,11 @@ tbody tr:last-child { border-bottom: none; }
 .pagination  { display: flex; gap: 6px; justify-content: center; margin-top: 14px; flex-wrap: wrap; }
 .page-btn    {
   padding: 7px 13px; border: 1.5px solid var(--border); border-radius: 6px;
-  background: #fff; cursor: pointer; font-size: 13px;
+  background: var(--card-bg); cursor: pointer; font-size: 13px;
   transition: all var(--transition); min-height: 38px;
 }
 .page-btn.active, .page-btn:hover { background: var(--primary); color: #fff; border-color: var(--primary); }
+.dark .page-btn { background: var(--card-bg); color: var(--text); border-color: var(--border); }
 
 /* ══════════════════════════════════════════════════════
    TABLET  ≤ 900px
