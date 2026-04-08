@@ -34,7 +34,7 @@ const API = {
   dashboard: () => API.get('/dashboard'),
 
   // ESPECIALIDADES
-  especialidades: () => API.get('/especialidades'),
+  especialidades: () => API.get('/especialidades?lang=' + (Lang._lang || 'pt')),
 
   // MÉDICOS
   medicos:         (espId) => API.get('/medicos' + (espId ? `?especialidade=${espId}` : '')),

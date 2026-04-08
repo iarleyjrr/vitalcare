@@ -78,6 +78,8 @@ def init_db():
         id   INTEGER PRIMARY KEY AUTOINCREMENT,
         nome TEXT NOT NULL UNIQUE,
         descricao TEXT,
+        nome_en TEXT,
+        descricao_en TEXT,
         duracao_minutos INTEGER DEFAULT 30,
         icone TEXT DEFAULT 'stethoscope'
     );
@@ -163,16 +165,30 @@ def init_db():
     );
     """)
 
-    # Seed especialidades
+    # Migração: adicionar colunas EN se não existirem
+    for col in ['nome_en', 'descricao_en']:
+        try:
+            c.execute(f"ALTER TABLE especialidades ADD COLUMN {col} TEXT")
+        except Exception:
+            pass  # Coluna já existe
+
+    # Seed especialidades com traduções EN
     for e in [
-        ('Clínica Geral','Medicina geral e preventiva',30,'stethoscope'),
-        ('Pediatria','Saúde infantil e adolescente',30,'baby'),
-        ('Cardiologia','Coração e sistema cardiovascular',45,'heart-pulse'),
-        ('Ortopedia','Sistema músculo-esquelético',30,'bone'),
-        ('Nutrição','Orientação alimentar e nutricional',45,'apple'),
-        ('Psicologia','Saúde mental e bem-estar',50,'brain'),
+        ('Clínica Geral','Medicina geral e preventiva','General Practice','General and preventive medicine',30,'stethoscope'),
+        ('Pediatria','Saúde infantil e adolescente','Pediatrics','Child and adolescent health',30,'baby'),
+        ('Cardiologia','Coração e sistema cardiovascular','Cardiology','Heart and cardiovascular system',45,'heart-pulse'),
+        ('Ortopedia','Sistema músculo-esquelético','Orthopedics','Musculoskeletal system',30,'bone'),
+        ('Nutrição','Orientação alimentar e nutricional','Nutrition','Nutritional and dietary guidance',45,'apple'),
+        ('Psicologia','Saúde mental e bem-estar','Psychology','Mental health and well-being',50,'brain'),
     ]:
-        c.execute("INSERT OR IGNORE INTO especialidades(nome,descricao,duracao_minutos,icone) VALUES(?,?,?,?)", e)
+        c.execute(
+            "INSERT OR IGNORE INTO especialidades(nome,descricao,nome_en,descricao_en,duracao_minutos,icone) VALUES(?,?,?,?,?,?)", e
+        )
+        # Atualizar registros existentes com as traduções EN
+        c.execute(
+            "UPDATE especialidades SET nome_en=?, descricao_en=? WHERE nome=? AND (nome_en IS NULL OR nome_en='')",
+            (e[2], e[3], e[0])
+        )
 
     # Seed médicos
     for m in [
@@ -554,10 +570,25 @@ def dashboard():
 @app.route('/api/especialidades', methods=['GET'])
 @require_auth
 def get_especialidades():
+    lang = request.args.get('lang', 'pt')
     conn = get_db()
+    # Adicionar coluna nome_en se não existir (migração automática)
+    try:
+        conn.execute("ALTER TABLE especialidades ADD COLUMN nome_en TEXT")
+        conn.execute("ALTER TABLE especialidades ADD COLUMN descricao_en TEXT")
+        conn.commit()
+    except Exception:
+        pass  # Colunas já existem
     rows = conn.execute("SELECT * FROM especialidades ORDER BY nome").fetchall()
     conn.close()
-    return jsonify([dict(r) for r in rows])
+    result = []
+    for r in rows:
+        d = dict(r)
+        if lang == 'en':
+            d['nome']     = d.get('nome_en')     or d['nome']
+            d['descricao']= d.get('descricao_en') or d.get('descricao','')
+        result.append(d)
+    return jsonify(result)
 
 # ══════════════════════════════════════════════════════════════════════════════
 # MÉDICOS
