@@ -3,6 +3,7 @@ const API = {
   base: '/api',
 
   _token: () => localStorage.getItem('vc_token'),
+  _lang:  () => (typeof Lang !== 'undefined' ? Lang._lang : null) || 'pt',
 
   async _req(method, path, body = null) {
     const opts = {
@@ -37,8 +38,8 @@ const API = {
   especialidades: () => API.get('/especialidades?lang=' + (Lang._lang || 'pt')),
 
   // MÉDICOS
-  medicos:         (espId) => API.get('/medicos' + (espId ? `?especialidade=${espId}` : '')),
-  medicoById:      (id)    => API.get(`/medicos/${id}`),
+  medicos:         (espId) => API.get('/medicos?lang=' + API._lang() + (espId ? `&especialidade=${espId}` : '')),
+  medicoById:      (id)    => API.get(`/medicos/${id}?lang=` + API._lang()),
   criarMedico:     (d)     => API.post('/medicos', d),
   disponibilidade: (mid, data) => API.get(`/medicos/${mid}/disponibilidade?data=${data}`),
 
@@ -50,8 +51,9 @@ const API = {
 
   // CONSULTAS
   consultas: (params = {}) => {
+    params.lang = API._lang();
     const qs = new URLSearchParams(params).toString();
-    return API.get('/consultas' + (qs ? `?${qs}` : ''));
+    return API.get('/consultas?' + qs);
   },
   criarConsulta:    (d)   => API.post('/consultas', d),
   atualizarConsulta:(id,d)=> API.put(`/consultas/${id}`, d),
@@ -64,11 +66,11 @@ const API = {
 
   // FINANCEIRO
   financeiro: (params = {}) => {
+    params.lang = API._lang();
     const qs = new URLSearchParams(params).toString();
-    // Médico usa rota própria de faturamento
     const user = JSON.parse(atob(localStorage.getItem('vc_token')?.split('.')[1] || 'e30=') || '{}');
     const rota = user.perfil === 'medico' ? '/financeiro/medico' : '/financeiro';
-    return API.get(rota + (qs ? `?${qs}` : ''));
+    return API.get(rota + '?' + qs);
   },
   pagarFatura: (id, forma) => API.post(`/financeiro/${id}/pagar`, { forma_pagamento: forma }),
 

@@ -63,6 +63,39 @@ def is_admin_recepcao(): return request.user['perfil'] in ('admin', 'recepcionis
 def is_admin_medico():   return request.user['perfil'] in ('admin', 'medico')
 def is_clinico():    return request.user['perfil'] in ('admin', 'medico', 'recepcionista')
 
+# ─── TRADUÇÃO DE ESPECIALIDADE ───────────────────────────────────────────────
+ESP_EN = {
+    'Clinica Geral':'General Practice','Clínica Geral':'General Practice',
+    'Pediatria':'Pediatrics','Cardiologia':'Cardiology',
+    'Ortopedia':'Orthopedics','Nutrição':'Nutrition',
+    'Nutricao':'Nutrition','Psicologia':'Psychology',
+}
+BIO_EN = {
+    'Clínica Geral há 15 anos.':'General practice for 15 years.',
+    'Pediatra especialista em neonatologia.':'Pediatrician specialized in neonatology.',
+    'Cardiologista com foco em prevenção.':'Cardiologist focused on prevention.',
+    'Ortopedista com especialização em joelho.':'Orthopedist specialized in knee surgery.',
+    'Nutricionista clínica e esportiva.':'Clinical and sports nutritionist.',
+    'Psicólogo cognitivo-comportamental.':'Cognitive-behavioral psychologist.',
+}
+
+def get_lang():
+    return request.args.get('lang', request.headers.get('X-Lang', 'pt'))
+
+def tr(row_dict, lang):
+    if lang != 'en': return row_dict
+    d = dict(row_dict)
+    for field in ('especialidade', 'especialidade_nome'):
+        if field in d and d[field]:
+            d[field] = ESP_EN.get(d[field], d[field])
+    if 'bio' in d and d['bio']:
+        d['bio'] = BIO_EN.get(d['bio'], d['bio'])
+    return d
+
+def tr_list(rows, lang):
+    if lang != 'en': return [dict(r) for r in rows]
+    return [tr(dict(r), lang) for r in rows]
+
 # ─── BANCO ────────────────────────────────────────────────────────────────────
 def get_db():
     conn = sqlite3.connect(DB_PATH)
@@ -596,8 +629,8 @@ def get_especialidades():
 @app.route('/api/medicos', methods=['GET'])
 @require_auth
 def get_medicos():
-    # Paciente não acessa lista de médicos diretamente (só via agendamento)
     esp_id = request.args.get('especialidade')
+    lang   = get_lang()
     conn = get_db()
     if esp_id:
         rows = conn.execute("""
@@ -612,11 +645,12 @@ def get_medicos():
             WHERE m.ativo=1 ORDER BY m.nome
         """).fetchall()
     conn.close()
-    return jsonify([dict(r) for r in rows])
+    return jsonify(tr_list(rows, lang))
 
 @app.route('/api/medicos/<int:mid>', methods=['GET'])
 @require_auth
 def get_medico(mid):
+    lang = get_lang()
     conn = get_db()
     m = conn.execute("""
         SELECT m.*, e.nome as especialidade_nome FROM medicos m
@@ -624,7 +658,7 @@ def get_medico(mid):
     """, (mid,)).fetchone()
     conn.close()
     if not m: return jsonify({'error':'Não encontrado'}), 404
-    return jsonify(dict(m))
+    return jsonify(tr(dict(m), lang))
 
 @app.route('/api/medicos', methods=['POST'])
 @require_auth
@@ -840,6 +874,7 @@ def get_consultas():
     if status: where.append("c.status=?");             params.append(status)
 
     conn = get_db()
+    lang = get_lang()
     rows = conn.execute(f"""
         SELECT c.*, p.nome as paciente_nome, m.nome as medico_nome, e.nome as especialidade
         FROM consultas c
@@ -850,7 +885,7 @@ def get_consultas():
         ORDER BY c.data_hora DESC LIMIT 200
     """, params).fetchall()
     conn.close()
-    return jsonify([dict(r) for r in rows])
+    return jsonify(tr_list(rows, lang))
 
 @app.route('/api/consultas', methods=['POST'])
 @require_auth
@@ -1039,6 +1074,7 @@ def get_financeiro():
     data_i = request.args.get('data_inicio', datetime.date.today().replace(day=1).isoformat())
     data_f = request.args.get('data_fim', datetime.date.today().isoformat())
     conn = get_db()
+    lang = get_lang()
     faturas = conn.execute("""
         SELECT f.*, p.nome as paciente_nome, e.nome as especialidade,
                c.data_hora as data_consulta, m.nome as medico_nome
@@ -1060,7 +1096,7 @@ def get_financeiro():
         FROM faturas WHERE date(data_emissao) BETWEEN ? AND ?
     """, (data_i, data_f)).fetchone()
     conn.close()
-    return jsonify({'faturas': [dict(r) for r in faturas], 'resumo': dict(resumo)})
+    return jsonify({'faturas': tr_list(faturas, lang), 'resumo': dict(resumo)})
 
 @app.route('/api/financeiro/<int:fid>/pagar', methods=['POST'])
 @require_auth
@@ -1098,6 +1134,7 @@ def get_financeiro_medico():
     data_i = request.args.get('data_inicio', datetime.date.today().replace(day=1).isoformat())
     data_f = request.args.get('data_fim', datetime.date.today().isoformat())
     conn   = get_db()
+    lang = get_lang()
     faturas = conn.execute("""
         SELECT f.*, p.nome as paciente_nome, e.nome as especialidade, c.data_hora as data_consulta
         FROM faturas f
