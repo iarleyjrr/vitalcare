@@ -18,8 +18,11 @@
 
     <div class="login-side-image">
       <div class="login-side-text">
-        <h2>Cuidando de quem cuida de você</h2>
-        <p>Agendamento online, prontuários digitais e gestão completa para sua clínica.</p>
+        <div class="login-side-badge">
+          <i class="fa fa-shield-heart"></i> Plataforma certificada e segura
+        </div>
+        <h2>Mais tempo para cuidar.<br>Menos tempo com burocracia.</h2>
+        <p>Agendamentos online, prontuários digitais e gestão clínica completa — tudo integrado para sua equipe e seus pacientes.</p>
       </div>
     </div>
 
@@ -220,7 +223,7 @@ function applyLoginLang(lang) {
 
 function setLang(lang) {
   Lang.set(lang);
-  applyLoginLang(lang);
+  // Lang.set() já chama applyAll() que re-renderiza o site
 }
 
 // Preencher login ao clicar na linha
