@@ -78,6 +78,20 @@ BIO_EN = {
     'Nutricionista clínica e esportiva.':'Clinical and sports nutritionist.',
     'Psicólogo cognitivo-comportamental.':'Cognitive-behavioral psychologist.',
 }
+PRONT_EN = {
+    'anamnese': {
+        'Paciente relata queixas há aproximadamente 7 dias. Nega alergias conhecidas.':
+        'Patient reports symptoms for approximately 7 days. Denies known allergies.'
+    },
+    'diagnostico': {
+        'Diagnóstico dentro dos parâmetros normais para a faixa etária.':
+        'Diagnosis within normal parameters for the age group.'
+    },
+    'prescricao': {
+        'Recomendado repouso e hidratação. Retorno em 30 dias se necessário.':
+        'Rest and hydration recommended. Return in 30 days if necessary.'
+    }
+}
 
 def get_lang():
     return request.args.get('lang', request.headers.get('X-Lang', 'pt'))
@@ -90,6 +104,10 @@ def tr(row_dict, lang):
             d[field] = ESP_EN.get(d[field], d[field])
     if 'bio' in d and d['bio']:
         d['bio'] = BIO_EN.get(d['bio'], d['bio'])
+    # Traduzir campos de prontuário
+    for field, tdict in PRONT_EN.items():
+        if field in d and d[field]:
+            d[field] = tdict.get(d[field], d[field])
     return d
 
 def tr_list(rows, lang):
@@ -986,6 +1004,7 @@ def get_prontuarios_paciente(pid):
         if not atendeu:
             conn.close()
             return jsonify({'error': 'Sem permissão'}), 403
+        lang = get_lang()
         rows = conn.execute("""
             SELECT pr.*, c.data_hora, m.nome as medico, e.nome as especialidade
             FROM prontuarios pr
@@ -996,8 +1015,9 @@ def get_prontuarios_paciente(pid):
             ORDER BY c.data_hora DESC
         """, (pid, mid)).fetchall()
         conn.close()
-        return jsonify([dict(r) for r in rows])
+        return jsonify(tr_list(rows, lang))
 
+    lang = get_lang()
     conn = get_db()
     rows = conn.execute("""
         SELECT pr.*, c.data_hora, m.nome as medico, e.nome as especialidade
@@ -1008,7 +1028,7 @@ def get_prontuarios_paciente(pid):
         WHERE pr.id_paciente=? ORDER BY c.data_hora DESC
     """, (pid,)).fetchall()
     conn.close()
-    return jsonify([dict(r) for r in rows])
+    return jsonify(tr_list(rows, lang))
 
 @app.route('/api/prontuarios/consulta/<int:cid>', methods=['GET'])
 @require_auth

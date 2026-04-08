@@ -60,8 +60,8 @@ const API = {
   cancelarConsulta: (id)  => API.delete(`/consultas/${id}`),
 
   // PRONTUÁRIOS
-  prontuariosPaciente: (pid) => API.get(`/prontuarios/${pid}`),
-  prontuarioConsulta:  (cid) => API.get(`/prontuarios/consulta/${cid}`),
+  prontuariosPaciente: (pid) => API.get(`/prontuarios/${pid}?lang=` + API._lang()),
+  prontuarioConsulta:  (cid) => API.get(`/prontuarios/consulta/${cid}?lang=` + API._lang()),
   salvarProntuario:    (d)   => API.post('/prontuarios', d),
 
   // FINANCEIRO
